@@ -1,1 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+    --accent-cyan: #06B6D4;
+    --background-light: #f6f6f8;
+    --background-dark: #0A0E14;
+    --panel-slate: #161B22;
+    --primary-text: #E1E4E8;
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

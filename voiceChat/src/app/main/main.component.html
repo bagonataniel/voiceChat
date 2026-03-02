@@ -1,5 +1,70 @@
 
-<input type="text" [(ngModel)]="participantName" placeholder="Enter participant name">
-<h2>LiveKit Voice Chat</h2>
-<button (click)="joinRoom()">Join Room</button>
-<button (click)="leaveRoom()">Leave Room</button>
+<div class="main-container container-fluid">
+    <div class="left-container">
+        <p>Groups</p>
+    </div>
+    <div class="right-container">
+        <div class="row">
+            <div class="titlebar">
+                <h2>Type in username: </h2>
+                <mat-form-field class="example-full-width">
+                    <mat-label>username</mat-label>
+                    <input matInput type="text" [(ngModel)]="username" placeholder="Enter participant name">
+                </mat-form-field>
+                <p>Type in token:</p>
+                <mat-form-field class="example-full-width">
+                    <mat-label>token</mat-label>
+                    <input matInput type="text" [(ngModel)]="TOKEN" placeholder="Enter token">
+                </mat-form-field>
+                <button mat-icon-button (click)="submitName()"><mat-icon>play_circle_outline</mat-icon></button>
+            </div>
+        </div>
+        <div class="row content-area">
+            <div class="call-area">
+                <div class="call-container">
+                    <div class="call-participants">
+                        <div *ngFor="let participant of participants" class="participant">
+                            {{participant[0].charAt(0).toUpperCase()}}
+                        </div>
+                    </div>
+                    <div class="menubar" *ngIf="!isConnected">
+                        <button mat-raised-button (click)="joinRoom()">Join Room</button>
+                    </div>
+                    <div class="menubar" id="connected" *ngIf="isConnected">
+                        <div class="profile">
+                            <div class="avatar" *ngIf="!room?.localParticipant?.isMicrophoneEnabled">{{username.charAt(0).toUpperCase()}}</div>
+                            <div class="avatar_talking" *ngIf="room?.localParticipant?.isMicrophoneEnabled">{{username.charAt(0).toUpperCase()}}</div>
+                            <div class="name">{{username}}</div>
+                        </div>
+                        <div class="controls">
+                            <button mat-icon-button (click)="toggleMute()"><mat-icon>{{room?.localParticipant?.isMicrophoneEnabled ? 'mic' : 'mic_off'}}</mat-icon></button>
+                            <button mat-icon-button (click)="toggleDeafen()"><mat-icon>{{room?.localParticipant?.audioLevel === 0 ? 'volume_off' : 'volume_up'}}</mat-icon></button>
+                            <button mat-icon-button (click)="leaveRoom()"><mat-icon>exit_to_app</mat-icon></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-container">
+                    <div class="chat-messages">
+                        <div *ngFor="let message of chatMessages" class="chat-message">
+                            <div class="avatar">{{message.participant.charAt(0).toUpperCase()}}</div>
+                            <div class="message-content">
+                                <p><strong>{{message.participant}}</strong> {{message.timestamp?.getHours()}}:{{message.timestamp?.getMinutes()?.toString()?.padStart(2, '0')}}</p>
+                                <p>{{message.text}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <textarea [(ngModel)]="messageText" id="messageInput" aria-multiline="false" placeholder="Type your message here..."></textarea>
+                        <button mat-icon-button (click)="sendMessage()"><mat-icon>arrow_upward</mat-icon></button>
+                    </div>
+                </div>
+            </div>
+            <div class="users-area">
+                <mat-list>
+                    <mat-list-item *ngFor="let participant of participants">{{participant}}</mat-list-item>
+                    <mat-divider *ngFor="let participant of participants"></mat-divider>
+                </mat-list>
+            </div>
+        </div>
+    </div>
+</div>

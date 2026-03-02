@@ -1,43 +1,58 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Participant, Room, RoomEvent } from 'livekit-client'
+import { Participant, Room, RoomEvent, ChatMessage } from 'livekit-client'
+
+interface Message {
+  timestamp?: Date;
+  participant: string;
+  text: string;
+}
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })
-export class MainComponent implements OnInit{
-  LIVEKIT_URL: string = "livekit.url";
+export class MainComponent{
+  LIVEKIT_URL: string = "wss://chatapp-sd7xe8on.livekit.cloud";
   TOKEN: string = "";
   room: Room | null = null;
-  participantName: string = '';
+  username: string = '';
   participants: any[] = [];
+  chatMessages: Message[] = [];
+  messageText: string = '';
+  isConnected: boolean = false;
+  isMuted: boolean = false;
 
   constructor(private _http: HttpClient) {}
 
-  ngOnInit(): void {;
+  submitName(){
+    this.getToken().then(token => {
+      console.log('Token on init:', token);
+    }).catch(error => {
+      console.error('Error fetching token on init:', error);
+    });
   }
 
   getToken(): Promise<string> {
-    return this._http.post<{token: string}>('http://localhost:3000/api/token', { participantName: this.participantName })
+    return this._http.post<{token: string}>('http://localhost:3000/api/token', { participantName: this.username })
       .toPromise()
       .then(data => {
         if (!data) {
           throw new Error('Failed to retrieve token');
         }
         this.TOKEN = data.token;
-        console.log('Token received:', this.TOKEN);
         return this.TOKEN;
       });
   }
 
   async joinRoom() {  
-    await this.getToken();
+    // await this.getToken();
 
     this.room = new Room();
     // Connect to LiveKit room
     await this.room.connect(this.LIVEKIT_URL, this.TOKEN);
+    this.isConnected = true;
     console.log('Connected to room:', this.room.name);
 
     const remoteNames = Array.from(this.room.remoteParticipants.values()).map(p => p.name || p.identity);
@@ -45,7 +60,35 @@ export class MainComponent implements OnInit{
       this.room.localParticipant.name || this.room.localParticipant.identity,
       ...remoteNames
     ];
+    console.log(this.participants);
 
+    this.room.on(RoomEvent.ParticipantConnected, (participant) => {
+      console.log('Participant connected:', participant.identity);
+      this.participants.push(participant.name || participant.identity);
+    });
+
+    this.room.on(RoomEvent.ParticipantDisconnected, (participant) => {
+      console.log('Participant disconnected:', participant.identity);
+      this.participants = this.participants.filter(p => p !== (participant.name || participant.identity));
+    });
+
+    this.room.registerTextStreamHandler('chat', async (reader, participantInfo) => {
+        const info = reader.info;
+        console.log(
+          `  Topic: ${info.topic}\n` +
+          `  Timestamp: ${info.timestamp}\n` +
+          `  ID: ${info.id}\n` +
+          `  Size: ${info.size}`
+        );  
+
+        const text = await reader.readAll();
+        this.chatMessages.push({
+          participant: participantInfo.identity,
+          text: text,
+          timestamp: new Date(info.timestamp)
+        });
+    })
+    
     // Subscribe to incoming audio tracks
     this.room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
       if (track.kind === 'audio') {
@@ -60,17 +103,43 @@ export class MainComponent implements OnInit{
 
     // Publish local audio
     for (const track of stream.getTracks()) {
-      await this.room.localParticipant.publishTrack(track);
+        await this.room.localParticipant.publishTrack(track);
     }
 
     console.log('Microphone enabled');
   }
 
-  leaveRoom() {
-    if (this.room) {
-      this.room.disconnect();
-      console.log('Disconnected');
+  async sendMessage(){
+    if (this.room && this.messageText.trim() !== '') {
+      await this.room.localParticipant.sendText(this.messageText, { topic: "chat" });
+      this.chatMessages.push({
+        participant: this.room.localParticipant.identity,
+        text: this.messageText,
+        timestamp: new Date()
+      });
+      this.messageText = '';
     }
   }
 
-} 
+  leaveRoom() {
+    if (this.room) {
+      this.room.disconnect();
+      this.isConnected = false;
+      console.log('Disconnected');
+    }
+  }
+toggleMute() {
+  if (this.room) {
+    console.log(this.room.localParticipant.audioTrackPublications);
+    this.isMuted = !this.isMuted;
+    this.room.localParticipant.setMicrophoneEnabled(!this.isMuted);
+    console.log("muted:", this.isMuted);
+  }
+}
+
+  toggleDeafen(){
+    if (this.room) {
+      this.room.localParticipant.audioLevel = this.room.localParticipant.audioLevel === 0 ? 1 : 0;
+      };
+  }
+  }

@@ -7,6 +7,15 @@ import { MainComponent } from './main/main.component';
 
 import { FormsModule } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MatCardModule } from '@angular/material/card';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatListModule} from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+
 
 @NgModule({
   declarations: [
@@ -16,10 +25,18 @@ import { provideHttpClient } from '@angular/common/http';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    MatCardModule,
+    MatDividerModule,
+    MatListModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule
   ],
   providers: [
-    provideHttpClient()
+    provideHttpClient(),
+    provideAnimationsAsync()
   ],
   bootstrap: [AppComponent]
 })
