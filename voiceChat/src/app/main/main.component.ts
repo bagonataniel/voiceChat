@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { Participant, Room, RoomEvent, ChatMessage } from 'livekit-client'
 import { SupabaseService } from '../services/supabase.service';
 import { Router } from '@angular/router';
+import { MainService } from '../services/main.service';
+import { supabase } from '../core/supabase.client';
 
 interface Message {
   timestamp?: Date;
@@ -15,7 +17,7 @@ interface Message {
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })
-export class MainComponent{
+export class MainComponent implements OnInit {
   LIVEKIT_URL: string = "wss://chatapp-sd7xe8on.livekit.cloud";
   TOKEN: string = "";
   room: Room | null = null;
@@ -25,32 +27,26 @@ export class MainComponent{
   messageText: string = '';
   isConnected: boolean = false;
   isMuted: boolean = false;
+  groups: any[] = []
 
-  constructor(private _http: HttpClient, private supabase: SupabaseService, private router: Router) {}
+  constructor(private _http: HttpClient, private supabase: SupabaseService, private router: Router, private mainService: MainService) { }
 
-  submitName(){
-    this.getToken().then(token => {
-      console.log('Token on init:', token);
+  async ngOnInit(): Promise<void> {
+    await this.supabase.getSession().then((response) => {
+      if (response.data.session) {
+        this.username = response.data.session.user.user_metadata.name || '';
+      }
+    })
+    let { data: groups, error } = await supabase.from('groups').select('*')
+    this.groups = groups || [];
+    this.mainService.getToken("test").then(token => {
+      this.TOKEN = token;
     }).catch(error => {
-      console.error('Error fetching token on init:', error);
+      console.error('Error fetching token:', error);
     });
   }
 
-  getToken(): Promise<string> {
-    return this._http.post<{token: string}>('https://yublnlwgsacateiatolf.supabase.co/functions/v1/token-generator', { participantName: this.username })
-      .toPromise()
-      .then(data => {
-        if (!data) {
-          throw new Error('Failed to retrieve token');
-        }
-        this.TOKEN = data.token;
-        return this.TOKEN;
-      });
-  }
-
-  async joinRoom() {  
-    // await this.getToken();
-
+  async joinRoom() {
     this.room = new Room();
     // Connect to LiveKit room
     await this.room.connect(this.LIVEKIT_URL, this.TOKEN);
@@ -75,22 +71,22 @@ export class MainComponent{
     });
 
     this.room.registerTextStreamHandler('chat', async (reader, participantInfo) => {
-        const info = reader.info;
-        console.log(
-          `  Topic: ${info.topic}\n` +
-          `  Timestamp: ${info.timestamp}\n` +
-          `  ID: ${info.id}\n` +
-          `  Size: ${info.size}`
-        );  
+      const info = reader.info;
+      console.log(
+        `  Topic: ${info.topic}\n` +
+        `  Timestamp: ${info.timestamp}\n` +
+        `  ID: ${info.id}\n` +
+        `  Size: ${info.size}`
+      );
 
-        const text = await reader.readAll();
-        this.chatMessages.push({
-          participant: participantInfo.identity,
-          text: text,
-          timestamp: new Date(info.timestamp)
-        });
+      const text = await reader.readAll();
+      this.chatMessages.push({
+        participant: participantInfo.identity,
+        text: text,
+        timestamp: new Date(info.timestamp)
+      });
     })
-    
+
     // Subscribe to incoming audio tracks
     this.room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
       if (track.kind === 'audio') {
@@ -105,13 +101,13 @@ export class MainComponent{
 
     // Publish local audio
     for (const track of stream.getTracks()) {
-        await this.room.localParticipant.publishTrack(track);
+      await this.room.localParticipant.publishTrack(track);
     }
 
     console.log('Microphone enabled');
   }
 
-  async sendMessage(){
+  async sendMessage() {
     if (this.room && this.messageText.trim() !== '') {
       await this.room.localParticipant.sendText(this.messageText, { topic: "chat" });
       this.chatMessages.push({
@@ -130,22 +126,23 @@ export class MainComponent{
       console.log('Disconnected');
     }
   }
-toggleMute() {
-  if (this.room) {
-    console.log(this.room.localParticipant.audioTrackPublications);
-    this.isMuted = !this.isMuted;
-    this.room.localParticipant.setMicrophoneEnabled(!this.isMuted);
-    console.log("muted:", this.isMuted);
-  }
-}
 
-  toggleDeafen(){
+  toggleMute() {
+    if (this.room) {
+      console.log(this.room.localParticipant.audioTrackPublications);
+      this.isMuted = !this.isMuted;
+      this.room.localParticipant.setMicrophoneEnabled(!this.isMuted);
+      console.log("muted:", this.isMuted);
+    }
+  }
+
+  toggleDeafen() {
     if (this.room) {
       this.room.localParticipant.audioLevel = this.room.localParticipant.audioLevel === 0 ? 1 : 0;
-      };
+    };
   }
 
-  logout(){
+  logout() {
     this.supabase.signOut().then(() => {
       console.log('Logged out successfully');
       this.router.navigate(['/login']);
