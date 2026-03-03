@@ -64,6 +64,7 @@
                     <mat-list-item *ngFor="let participant of participants">{{participant}}</mat-list-item>
                     <mat-divider *ngFor="let participant of participants"></mat-divider>
                 </mat-list>
+                <button mat-raised-button (click)="logout()">Logout</button>
             </div>
         </div>
     </div>

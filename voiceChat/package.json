@@ -11,18 +11,20 @@
     "electron-build": "ng build --prod && electron ."
   },
   "build": {
-  "appId": "com.myapp.voicechat",
-  "productName": "VoiceChat",
-  "files": [
-    "main.js",
-    "package.json",
-    "dist/voice-chat/**/*",
-    "node_modules/**/*"
-  ],
-  "win": {
-    "target": ["portable"]
-  }
-},
+    "appId": "com.myapp.voicechat",
+    "productName": "VoiceChat",
+    "files": [
+      "main.js",
+      "package.json",
+      "dist/voice-chat/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ]
+    }
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "^18.2.0",
@@ -35,6 +37,7 @@
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
+    "@supabase/supabase-js": "^2.78.0",
     "bootstrap": "^5.2.3",
     "livekit-client": "^2.17.2",
     "rxjs": "~7.8.0",

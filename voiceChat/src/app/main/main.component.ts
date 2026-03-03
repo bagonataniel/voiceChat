@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Participant, Room, RoomEvent, ChatMessage } from 'livekit-client'
+import { SupabaseService } from '../services/supabase.service';
+import { Router } from '@angular/router';
 
 interface Message {
   timestamp?: Date;
@@ -24,7 +26,7 @@ export class MainComponent{
   isConnected: boolean = false;
   isMuted: boolean = false;
 
-  constructor(private _http: HttpClient) {}
+  constructor(private _http: HttpClient, private supabase: SupabaseService, private router: Router) {}
 
   submitName(){
     this.getToken().then(token => {
@@ -35,7 +37,7 @@ export class MainComponent{
   }
 
   getToken(): Promise<string> {
-    return this._http.post<{token: string}>('http://localhost:3000/api/token', { participantName: this.username })
+    return this._http.post<{token: string}>('https://yublnlwgsacateiatolf.supabase.co/functions/v1/token-generator', { participantName: this.username })
       .toPromise()
       .then(data => {
         if (!data) {
@@ -142,4 +144,13 @@ toggleMute() {
       this.room.localParticipant.audioLevel = this.room.localParticipant.audioLevel === 0 ? 1 : 0;
       };
   }
+
+  logout(){
+    this.supabase.signOut().then(() => {
+      console.log('Logged out successfully');
+      this.router.navigate(['/login']);
+    }).catch((error) => {
+      console.error('Error logging out:', error);
+    });
   }
+}

@@ -1,0 +1,19 @@
+<div class="example-container">
+  <mat-form-field>
+    <mat-label>Enter your email</mat-label>
+    <input
+      matInput
+      placeholder="pat@example.com"
+      [(ngModel)]="email"
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Enter your email</mat-label>
+    <input
+      matInput
+      type="password"
+      [(ngModel)]="password"
+    />
+  </mat-form-field>
+  <button (click)="signIn()">Login</button>
+</div>
