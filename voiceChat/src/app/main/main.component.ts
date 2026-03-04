@@ -28,22 +28,28 @@ export class MainComponent implements OnInit {
   isConnected: boolean = false;
   isMuted: boolean = false;
   groups: any[] = []
+  selectedGroup: number= 1;
 
   constructor(private _http: HttpClient, private supabase: SupabaseService, private router: Router, private mainService: MainService) { }
 
   async ngOnInit(): Promise<void> {
     await this.supabase.getSession().then((response) => {
       if (response.data.session) {
-        this.username = response.data.session.user.user_metadata.name || '';
+        this.username = response.data.session.user.user_metadata.name || '_username_';
       }
-    })
-    let { data: groups, error } = await supabase.from('groups').select('*')
-    this.groups = groups || [];
+    });    
     this.mainService.getToken("test").then(token => {
       this.TOKEN = token;
     }).catch(error => {
       console.error('Error fetching token:', error);
     });
+  }
+
+  enterKeyDown() {
+    if (event instanceof KeyboardEvent && event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendMessage();
+    }
   }
 
   async joinRoom() {
@@ -119,6 +125,11 @@ export class MainComponent implements OnInit {
     }
   }
 
+  onGroupSelected(groupId: number) {
+    this.selectedGroup = groupId;
+    console.log('Selected group changed to:', groupId);
+  }
+
   leaveRoom() {
     if (this.room) {
       this.room.disconnect();
@@ -142,12 +153,5 @@ export class MainComponent implements OnInit {
     };
   }
 
-  logout() {
-    this.supabase.signOut().then(() => {
-      console.log('Logged out successfully');
-      this.router.navigate(['/login']);
-    }).catch((error) => {
-      console.error('Error logging out:', error);
-    });
-  }
+
 }

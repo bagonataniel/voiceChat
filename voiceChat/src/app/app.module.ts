@@ -17,6 +17,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
+import { GroupsComponent } from './components/groups/groups.component';
+import { GroupUsersComponent } from './components/group-users/group-users.component';
 
 
 @NgModule({
@@ -24,7 +26,9 @@ import { LoginComponent } from './login/login.component';
     AppComponent,
     MainComponent,
     RegisterComponent,
-    LoginComponent
+    LoginComponent,
+    GroupsComponent,
+    GroupUsersComponent
   ],
   imports: [
     BrowserModule,

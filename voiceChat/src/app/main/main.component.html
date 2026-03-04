@@ -1,21 +1,10 @@
 
 <div class="main-container container-fluid">
-    <div class="left-container">
-        <div class="avatar" *ngFor="let group of groups">{{group.name.charAt(0).toUpperCase()}}</div>
-    </div>
+    <app-groups class="left-container" (groupSelected)="onGroupSelected($event)"></app-groups>
     <div class="right-container">
         <div class="row">
             <div class="titlebar">
-                <h2>Type in username: </h2>
-                <mat-form-field class="example-full-width">
-                    <mat-label>username</mat-label>
-                    <input matInput type="text" [(ngModel)]="username" placeholder="Enter participant name">
-                </mat-form-field>
-                <p>Type in token:</p>
-                <mat-form-field class="example-full-width">
-                    <mat-label>token</mat-label>
-                    <input matInput type="text" [(ngModel)]="TOKEN" placeholder="Enter token">
-                </mat-form-field>
+                <h2>Welcome: {{username}}</h2>
             </div>
         </div>
         <div class="row content-area">
@@ -53,18 +42,13 @@
                         </div>
                     </div>
                     <div class="chat-input">
-                        <textarea [(ngModel)]="messageText" id="messageInput" aria-multiline="false" placeholder="Type your message here..."></textarea>
+                        <textarea [(ngModel)]="messageText" id="messageInput" (keydown)="enterKeyDown()" aria-multiline="false" placeholder="Type your message here..."></textarea>
                         <button mat-icon-button (click)="sendMessage()"><mat-icon>arrow_upward</mat-icon></button>
                     </div>
                 </div>
             </div>
-            <div class="users-area">
-                <mat-list>
-                    <mat-list-item *ngFor="let participant of participants">{{participant}}</mat-list-item>
-                    <mat-divider *ngFor="let participant of participants"></mat-divider>
-                </mat-list>
-                <button mat-raised-button (click)="logout()">Logout</button>
-            </div>
+            <app-group-users [selectedGroup]="selectedGroup" class="users-area">
+            </app-group-users>
         </div>
     </div>
 </div>

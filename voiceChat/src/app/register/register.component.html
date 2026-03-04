@@ -1,16 +1,17 @@
-<p>register works!</p>
-<div class="example-container">
-    <mat-form-field>
-        <mat-label>Enter your email</mat-label>
-        <input matInput placeholder="pat@example.com" [(ngModel)]="email" />
-    </mat-form-field>
-    <mat-form-field>
-        <mat-label>Enter your name</mat-label>
-        <input matInput [(ngModel)]="name" />
-    </mat-form-field>
-    <mat-form-field>
-        <mat-label>Enter your email</mat-label>
-        <input matInput type="password" [(ngModel)]="password" />
-    </mat-form-field>
-    <button (click)="signUp()">Register</button>
-</div>
+ <div class="container-fluid main-container">
+   <div class="form-container">
+     <div class="mb-3">
+       <label for="exampleInputEmail1" class="form-label">Email address</label>
+       <input type="email" class="form-control" id="exampleInputEmail1" [(ngModel)]="email">
+     </div>
+    <div class="mb-3">
+       <label for="exampleInputEmail1" class="form-label">Name</label>
+       <input type="text" class="form-control" id="exampleInputName1" [(ngModel)]="name">
+     </div>
+     <div class="mb-3">
+       <label for="exampleInputPassword1" class="form-label">Password</label>
+       <input type="password" class="form-control" id="exampleInputPassword1" [(ngModel)]="password">
+     </div>
+     <button type="submit" class="btn btn-primary" (click)="signUp()">Register</button>
+   </div>
+ </div>

@@ -5,6 +5,8 @@
     --background-dark: #0A0E14;
     --panel-slate: #161B22;
     --primary-text: #E1E4E8;
+    --text-light: #C9D1D9;
+    --text-dark: #6A737D;
 }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

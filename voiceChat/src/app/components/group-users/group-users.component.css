@@ -1,0 +1,14 @@
+.user{
+    background-color: var(--background-dark);
+    width: 90%;
+    margin: 10px auto;
+    border-radius: 10px;
+    padding: 10px;
+}
+.user p{
+    margin: auto 0;
+}
+.users-area{
+    display: flex;
+    flex-direction: column;
+}

@@ -8,7 +8,13 @@ import { supabase } from '../core/supabase.client';
 export class SupabaseService {
 
   async signUp(email: string, password: string, name: string) {
-    return supabase.auth.signUp({ email, password, options: { data: { name } } });
+    const { data, error } = await supabase.auth.signUp({email, password, options: { data: { name } }});
+    if (data.user) {
+      await supabase.from('profiles').insert([
+        { id: data.user.id, name: name }
+      ]);
+    }
+    return { data, error };
   }
 
   async signIn(email: string, password: string) {

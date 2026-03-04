@@ -1,0 +1,23 @@
+.main-container{
+    background-color: var(--background-dark);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+.form-container{
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+    margin-top: 10%;
+    max-width: 500px;
+    background-color: var(--panel-slate);
+    height: max-content;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+label{
+    color: var(--text-light);
+}
