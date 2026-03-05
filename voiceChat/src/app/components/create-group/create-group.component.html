@@ -1,0 +1,14 @@
+<div class="container">
+    <h2>Create a new group</h2>
+    <div class="row">
+        <mat-form-field appearance="fill">
+            <mat-label>Group Name</mat-label>
+            <input matInput [(ngModel)]="groupName" name="groupName" required>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Group Color</mat-label>
+            <input matInput type="color" [(ngModel)]="groupColor" name="groupColor" required>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="createGroup()">Create Group</button>
+    </div>
+</div>

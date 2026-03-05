@@ -19,7 +19,11 @@ import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
 import { GroupsComponent } from './components/groups/groups.component';
 import { GroupUsersComponent } from './components/group-users/group-users.component';
-
+import { HomeComponent } from './home/home.component';
+import { CreateGroupComponent } from './components/create-group/create-group.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { JoinGroupComponent } from './components/join-group/join-group.component';
+import {MatStepperModule} from '@angular/material/stepper';
 
 @NgModule({
   declarations: [
@@ -28,7 +32,10 @@ import { GroupUsersComponent } from './components/group-users/group-users.compon
     RegisterComponent,
     LoginComponent,
     GroupsComponent,
-    GroupUsersComponent
+    GroupUsersComponent,
+    HomeComponent,
+    CreateGroupComponent,
+    JoinGroupComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +47,9 @@ import { GroupUsersComponent } from './components/group-users/group-users.compon
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
+    MatDialogModule,
+    MatStepperModule
   ],
   providers: [
     provideHttpClient(),

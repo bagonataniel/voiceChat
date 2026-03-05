@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Participant, Room, RoomEvent, ChatMessage } from 'livekit-client'
 import { SupabaseService } from '../services/supabase.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MainService } from '../services/main.service';
 import { supabase } from '../core/supabase.client';
 
@@ -30,9 +30,10 @@ export class MainComponent implements OnInit {
   groups: any[] = []
   selectedGroup: number= 1;
 
-  constructor(private _http: HttpClient, private supabase: SupabaseService, private router: Router, private mainService: MainService) { }
+  constructor(private _http: HttpClient, private supabase: SupabaseService, private router: Router, private mainService: MainService, private route: ActivatedRoute) { }
 
   async ngOnInit(): Promise<void> {
+    this.selectedGroup = Number(this.route.snapshot.paramMap.get('groupId'));
     await this.supabase.getSession().then((response) => {
       if (response.data.session) {
         this.username = response.data.session.user.user_metadata.name || '_username_';

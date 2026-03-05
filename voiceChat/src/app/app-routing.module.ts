@@ -5,9 +5,11 @@ import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
 import { authGuardGuard } from './guards/auth-guard.guard';
 import { loggedInGuard } from './guards/logged-in.guard';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
-  {path: '', component: MainComponent, canActivate: [authGuardGuard]},
+  {path: '', component: HomeComponent, canActivate: [authGuardGuard]},
+  {path: 'main/:groupId', component: MainComponent, canActivate: [authGuardGuard]},
   {path: 'register', component: RegisterComponent},
   {path: 'login', component: LoginComponent, canActivate: [loggedInGuard]}
 ];

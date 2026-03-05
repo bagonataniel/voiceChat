@@ -1,0 +1,54 @@
+<!-- <div class="container">
+    <h2>Join a group</h2>
+    <div class="row">
+        <mat-form-field appearance="fill">
+            <mat-label>Group Name</mat-label>
+            <input matInput [(ngModel)]="groupId" name="groupName" required>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="joinGroup()">Join Group</button>
+    </div>
+</div> -->
+
+<mat-stepper #stepper>
+    <!-- <mat-step [stepControl]="firstFormGroup" errorMessage="Name is required.">
+    <form [formGroup]="firstFormGroup">
+      <ng-template matStepLabel>Fill out your name</ng-template>
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+      </mat-form-field>
+      <div>
+        <p>Go to a different step to see the error state</p>
+        <button matButton matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step> -->
+    <mat-step label="Step 1" state="phone">
+        <ng-template matStepLabel>Fill out your group ID</ng-template>
+        <mat-form-field>
+            <mat-label>Group ID</mat-label>
+            <input matInput [(ngModel)]="groupId" name="groupName" required>
+        </mat-form-field>
+        <div>
+            <button matButton matStepperNext (click)="searchGroup()">Next</button>
+        </div>
+    </mat-step>
+    <mat-step label="Step 2" state="phone">
+        <ng-template matStepLabel>Confirm Group ID</ng-template>
+        <mat-label>Is this the correct group?</mat-label>
+        <div *ngIf="groupData.length > 0" class="groupData">
+            <div class="avatar" [style.background-color]="groupData[0]?.color">{{groupData[0]?.name.charAt(0).toUpperCase()}}</div>
+            <mat-label>{{groupData[0]?.name}}</mat-label>
+        </div>
+        <div>
+            <button matButton matStepperNext (click)="joinGroup()">Join Group</button>
+        </div>
+    </mat-step>
+    <mat-step>
+        <ng-template matStepLabel>Done</ng-template>
+        <p>You are now done.</p>
+        <div>
+            <button matButton mat-dialog-close>Close</button>
+        </div>
+    </mat-step>
+</mat-stepper>
