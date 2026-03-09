@@ -13,8 +13,8 @@ export class CreateGroupComponent {
 
   constructor(private supabaseClient: SupabaseService){}
 
-  createGroup() {
-    const uId = this.supabaseClient.getSession().then((response) => {
+  async createGroup() {
+    const uId = await this.supabaseClient.getSession().then((response) => {
       if (response.data.session) {
         return response.data.session.user.id || '';
     }});

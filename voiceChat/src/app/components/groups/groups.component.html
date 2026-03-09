@@ -1,6 +1,6 @@
 <div class="left-container">
         <div class="avatar" style="background-color: var(--panel-slate);" [routerLink]="['']"><mat-icon>home</mat-icon></div>
-        <div class="avatar" [style.background-color]="group.color" *ngFor="let group of groups" (click)="selectGroup(group.id)">{{group.name.charAt(0).toUpperCase()}}</div>
+        <div class="avatar" [style.background-color]="group.color" *ngFor="let group of groups" [routerLink]="['/main', group.id]">{{group.name.charAt(0).toUpperCase()}}</div>
         <div class="avatar" style="background-color: var(--panel-slate);" (click)="addGroup()"><mat-icon>group</mat-icon></div>
         <div class="avatar" style="background-color: var(--panel-slate);" (click)="createGroup()"><mat-icon>add</mat-icon></div>
 </div>

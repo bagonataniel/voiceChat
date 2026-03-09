@@ -1,10 +1,9 @@
-
 <div class="main-container container-fluid">
-    <app-groups class="left-container" (groupSelected)="onGroupSelected($event)"></app-groups>
+    <app-groups class="left-container"></app-groups>
     <div class="right-container">
         <div class="row">
             <div class="titlebar">
-                <h2>Welcome: {{username}}</h2>
+                <h2>{{selectedGroupName}}</h2>
             </div>
         </div>
         <div class="row content-area">
@@ -20,13 +19,19 @@
                     </div>
                     <div class="menubar" id="connected" *ngIf="isConnected">
                         <div class="profile">
-                            <div class="avatar" *ngIf="!room?.localParticipant?.isMicrophoneEnabled">{{username.charAt(0).toUpperCase()}}</div>
-                            <div class="avatar_talking" *ngIf="room?.localParticipant?.isMicrophoneEnabled">{{username.charAt(0).toUpperCase()}}</div>
+                            <div class="avatar" *ngIf="!room?.localParticipant?.isMicrophoneEnabled">
+                                {{username.charAt(0).toUpperCase()}}</div>
+                            <div class="avatar_talking" *ngIf="room?.localParticipant?.isMicrophoneEnabled">
+                                {{username.charAt(0).toUpperCase()}}</div>
                             <div class="name">{{username}}</div>
                         </div>
                         <div class="controls">
-                            <button mat-icon-button (click)="toggleMute()"><mat-icon>{{room?.localParticipant?.isMicrophoneEnabled ? 'mic' : 'mic_off'}}</mat-icon></button>
-                            <button mat-icon-button (click)="toggleDeafen()"><mat-icon>{{room?.localParticipant?.audioLevel === 0 ? 'volume_off' : 'volume_up'}}</mat-icon></button>
+                            <button mat-icon-button
+                                (click)="toggleMute()"><mat-icon>{{room?.localParticipant?.isMicrophoneEnabled ? 'mic' :
+                                    'mic_off'}}</mat-icon></button>
+                            <button mat-icon-button
+                                (click)="toggleDeafen()"><mat-icon>{{room?.localParticipant?.audioLevel === 0 ?
+                                    'volume_off' : 'volume_up'}}</mat-icon></button>
                             <button mat-icon-button (click)="leaveRoom()"><mat-icon>exit_to_app</mat-icon></button>
                         </div>
                     </div>
@@ -36,13 +41,16 @@
                         <div *ngFor="let message of chatMessages" class="chat-message">
                             <div class="avatar">{{message.participant.charAt(0).toUpperCase()}}</div>
                             <div class="message-content">
-                                <p><strong>{{message.participant}}</strong> {{message.timestamp?.getHours()}}:{{message.timestamp?.getMinutes()?.toString()?.padStart(2, '0')}}</p>
+                                <p><strong>{{message.participant}}</strong>
+                                    {{message.timestamp?.getHours()}}:{{message.timestamp?.getMinutes()?.toString()?.padStart(2,
+                                    '0')}}</p>
                                 <p>{{message.text}}</p>
                             </div>
                         </div>
                     </div>
                     <div class="chat-input">
-                        <textarea [(ngModel)]="messageText" id="messageInput" (keydown)="enterKeyDown()" aria-multiline="false" placeholder="Type your message here..."></textarea>
+                        <textarea [(ngModel)]="messageText" id="messageInput" (keydown)="enterKeyDown()"
+                            aria-multiline="false" placeholder="Type your message here..."></textarea>
                         <button mat-icon-button (click)="sendMessage()"><mat-icon>arrow_upward</mat-icon></button>
                     </div>
                 </div>

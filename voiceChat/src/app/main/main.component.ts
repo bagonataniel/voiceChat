@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Participant, Room, RoomEvent, ChatMessage } from 'livekit-client'
 import { SupabaseService } from '../services/supabase.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MainService } from '../services/main.service';
 import { supabase } from '../core/supabase.client';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 interface Message {
   timestamp?: Date;
@@ -27,19 +28,30 @@ export class MainComponent implements OnInit {
   messageText: string = '';
   isConnected: boolean = false;
   isMuted: boolean = false;
-  groups: any[] = []
-  selectedGroup: number= 1;
+  groups: any[] = [];
+  selectedGroup: number = 1;
+  selectedGroupName: string = '';
 
   constructor(private _http: HttpClient, private supabase: SupabaseService, private router: Router, private mainService: MainService, private route: ActivatedRoute) { }
 
   async ngOnInit(): Promise<void> {
+    this.route.params.subscribe(params => {
+      this.updateData();
+    });
+  }
+
+  async updateData() {
     this.selectedGroup = Number(this.route.snapshot.paramMap.get('groupId'));
+    this.mainService.groups$.subscribe(groups => {
+      this.groups = groups;
+      this.selectedGroupName = groups.find(g => g.id === this.selectedGroup)?.name || '';
+    });
     await this.supabase.getSession().then((response) => {
       if (response.data.session) {
         this.username = response.data.session.user.user_metadata.name || '_username_';
       }
-    });    
-    this.mainService.getToken("test").then(token => {
+    });
+    this.mainService.getToken(this.username).then(token => {
       this.TOKEN = token;
     }).catch(error => {
       console.error('Error fetching token:', error);
@@ -124,11 +136,6 @@ export class MainComponent implements OnInit {
       });
       this.messageText = '';
     }
-  }
-
-  onGroupSelected(groupId: number) {
-    this.selectedGroup = groupId;
-    console.log('Selected group changed to:', groupId);
   }
 
   leaveRoom() {

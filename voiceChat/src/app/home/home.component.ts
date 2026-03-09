@@ -12,10 +12,6 @@ export class HomeComponent implements OnInit{
 
   constructor(private router: Router, private supabase: SupabaseService){}
 
-  onGroupSelected(groupId: number) {
-    this.router.navigate([`/main/${groupId}`]);
-  }
-
   async ngOnInit() {
     await this.supabase.getSession().then((response) => {
       if (response.data.session) {

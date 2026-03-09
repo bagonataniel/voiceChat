@@ -4,6 +4,7 @@ import { SupabaseService } from '../../services/supabase.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateGroupComponent } from '../create-group/create-group.component';
 import { JoinGroupComponent } from '../join-group/join-group.component';
+import { MainService } from '../../services/main.service';
 
 @Component({
   selector: 'app-groups',
@@ -14,7 +15,7 @@ export class GroupsComponent implements OnInit{
   groups: any[] = [];
   userId: string = '';
 
-  constructor(private supabaseService: SupabaseService, private dialog: MatDialog) {}
+  constructor(private supabaseService: SupabaseService, private dialog: MatDialog, private mainService: MainService) {}
 
   async ngOnInit(): Promise<void> {
     this.userId = await this.supabaseService.getSession().then((response) => {
@@ -23,15 +24,11 @@ export class GroupsComponent implements OnInit{
       }});
     this.fetchGroups();
   }
+
   async fetchGroups() {
     let { data: groups, error } = await supabase.from('groups').select('id, name, color, user_groups!inner(user_id)').eq('user_groups.user_id', this.userId);    
     this.groups = groups || [];
-    console.log("group list", groups);
-  }
-
-  @Output() groupSelected = new EventEmitter<number>();
-  async selectGroup(groupId: number) {
-    this.groupSelected.emit(groupId);
+    this.mainService.setGroups(this.groups);
   }
 
   createGroup() {

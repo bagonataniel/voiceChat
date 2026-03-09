@@ -24,6 +24,7 @@ import { CreateGroupComponent } from './components/create-group/create-group.com
 import { MatDialogModule } from '@angular/material/dialog';
 import { JoinGroupComponent } from './components/join-group/join-group.component';
 import {MatStepperModule} from '@angular/material/stepper';
+import {MatMenuModule} from '@angular/material/menu';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import {MatStepperModule} from '@angular/material/stepper';
     MatInputModule,
     MatIconModule,
     MatDialogModule,
-    MatStepperModule
+    MatStepperModule,
+    MatMenuModule
   ],
   providers: [
     provideHttpClient(),
