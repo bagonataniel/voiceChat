@@ -8,21 +8,22 @@
     "electron": "ng serve & electron .",
     "electron-start": "electron .",
     "build": "ng build",
-    "electron-build": "ng build --prod && electron ."
+    "electron-build": "ng build --configuration production && electron-builder"
   },
   "build": {
     "appId": "com.myapp.voicechat",
     "productName": "VoiceChat",
+    "asar": true,
     "files": [
       "main.js",
       "package.json",
-      "dist/voice-chat/**/*",
-      "node_modules/**/*"
+      "dist/**/*"
     ],
+    "directories": {
+      "buildResources": "assets"
+    },
     "win": {
-      "target": [
-        "portable"
-      ]
+      "target": "portable"
     }
   },
   "private": true,

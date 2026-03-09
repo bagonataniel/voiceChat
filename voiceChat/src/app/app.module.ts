@@ -25,6 +25,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { JoinGroupComponent } from './components/join-group/join-group.component';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatMenuModule} from '@angular/material/menu';
+import { A11yModule } from "@angular/cdk/a11y";
 
 @NgModule({
   declarations: [
@@ -51,8 +52,9 @@ import {MatMenuModule} from '@angular/material/menu';
     MatIconModule,
     MatDialogModule,
     MatStepperModule,
-    MatMenuModule
-  ],
+    MatMenuModule,
+    A11yModule
+],
   providers: [
     provideHttpClient(),
     provideAnimationsAsync()

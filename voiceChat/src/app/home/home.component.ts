@@ -19,4 +19,13 @@ export class HomeComponent implements OnInit{
       }
     });
   }
+
+  logout() {
+    this.supabase.signOut().then(() => {
+      console.log('Logged out successfully');
+      this.router.navigate(['/login']);
+    }).catch((error) => {
+      console.error('Error logging out:', error);
+    });
+  }
 }
