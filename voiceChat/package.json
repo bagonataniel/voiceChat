@@ -7,8 +7,8 @@
     "start": "ng serve",
     "electron": "ng serve & electron .",
     "electron-start": "electron .",
-    "build": "ng build",
-    "electron-build": "ng build --configuration production && electron-builder"
+    "build": "ng build --configuration production --base-href ./",
+    "electron-build": "ng build --configuration production --base-href ./ && electron-builder"
   },
   "build": {
     "appId": "com.myapp.voicechat",

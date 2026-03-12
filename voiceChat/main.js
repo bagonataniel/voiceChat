@@ -14,7 +14,7 @@ function createWindow() {
 
   // Load Angular app
   if (app.isPackaged) {
-    win.loadFile(path.join(__dirname, 'dist', 'voice-chat', 'index.html'));
+    win.loadFile(path.join(__dirname, 'dist', 'voice-chat', 'browser', 'index.html'));
   } else {
     win.loadURL('http://localhost:4200');
   }
