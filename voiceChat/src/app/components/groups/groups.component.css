@@ -15,7 +15,9 @@
     align-items: center;
     justify-content: flex-start;
     gap: 20px;;
+    width: 100%;
     padding: 10px;
     height: 100%;
     color: var(--text-light);
+    background-color: var(--background-dark);
 }

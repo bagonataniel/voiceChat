@@ -2,19 +2,8 @@
     margin: 0;
     padding: 0;
 }
-.left-container{
-    width: 5%;
-    min-width: 100px;
-    height: 100vh;
-    background-color: var(--background-dark);
-    border-right: 1px solid #161B22;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-}
 .right-container{
-    width: 95%;
+    width: 100%;
     height: 100vh;
     background-color: var(--background-dark);
 }

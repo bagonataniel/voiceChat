@@ -19,8 +19,8 @@ export class MainService {
     return this.groupsSubject.value;
   }
 
-  async getToken(participantName: string): Promise<string> {
-    return this._http.post<{token: string}>('https://yublnlwgsacateiatolf.supabase.co/functions/v1/token-generator', { participantName: participantName })
+  async getToken(participantName: string, roomName: string): Promise<string> {
+    return this._http.post<{token: string}>('https://yublnlwgsacateiatolf.supabase.co/functions/v1/token-generator', { participantName: participantName, roomName: roomName })
       .toPromise()
       .then(data => {
         if (!data) {
