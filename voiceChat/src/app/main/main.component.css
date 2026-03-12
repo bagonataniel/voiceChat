@@ -9,19 +9,8 @@
     display: flex;
     flex-direction: row;
 }
-.left-container{
-    width: 5%;
-    min-width: 100px;
-    height: 100vh;
-    background-color: var(--background-dark);
-    border-right: 1px solid #161B22;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-}
 .right-container{
-    width: 95%;
+    width: 100%;
     height: 100vh;
     background-color: var(--background-dark);
 }
@@ -45,15 +34,18 @@
     background-color: var(--background-dark);
 }
 .call-container{
-    height: 40%;
+    height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     background-color: var(--panel-slate);
 }
 .chat-container{
-    height: 60%;
+    height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
+    background-color: var(--background-dark);
 }
 .chat-messages{
     flex: 1;
@@ -161,4 +153,10 @@ mat-list-item{
     background-color: var(--background-dark);
     resize: none;
     justify-content: center;
+}
+.full-height {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }

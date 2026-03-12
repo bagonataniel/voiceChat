@@ -51,7 +51,7 @@ export class MainComponent implements OnInit {
         this.username = response.data.session.user.user_metadata.name || '_username_';
       }
     });
-    this.mainService.getToken(this.username).then(token => {
+    this.mainService.getToken(this.username, this.selectedGroupName).then(token => {
       this.TOKEN = token;
     }).catch(error => {
       console.error('Error fetching token:', error);

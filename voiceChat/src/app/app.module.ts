@@ -25,7 +25,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { JoinGroupComponent } from './components/join-group/join-group.component';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatMenuModule} from '@angular/material/menu';
-import { A11yModule } from "@angular/cdk/a11y";
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura';
+import { Splitter, SplitterModule } from 'primeng/splitter';
 
 @NgModule({
   declarations: [
@@ -53,11 +55,16 @@ import { A11yModule } from "@angular/cdk/a11y";
     MatDialogModule,
     MatStepperModule,
     MatMenuModule,
-    A11yModule
+    SplitterModule
 ],
   providers: [
     provideHttpClient(),
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    providePrimeNG({ 
+            theme: {
+                preset: Aura
+            }
+        })
   ],
   bootstrap: [AppComponent]
 })

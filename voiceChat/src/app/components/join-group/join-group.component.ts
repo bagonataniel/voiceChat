@@ -20,11 +20,13 @@ export class JoinGroupComponent {
 
   constructor(private supabaseClient: SupabaseService) { }
 
-  joinGroup() {
-    const uId = this.supabaseClient.getSession().then((response) => {
+  async joinGroup() {
+    const uId = await this.supabaseClient.getSession().then((response) => {
       if (response.data.session) {
         return response.data.session.user.id || '';
     }});
+    console.log(this.groupId);
+    
     supabase.from('user_groups').insert({ user_id: uId, group_id: this.groupId }).then(({ data, error }) => {
       if (error) {
         console.error('Error adding user to group:', error);

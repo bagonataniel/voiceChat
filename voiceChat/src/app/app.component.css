@@ -1,0 +1,30 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+:host {
+  display: block; /* important so host takes the height */
+  height: 100%;
+  width: 100%;
+  background-color: var(--background-dark);
+}
+.left-container{
+    height: 100vh;
+    background-color: var(--background-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+html, body, app-root, .main-container {
+  height: 100%;
+  margin: 0;
+}
+
+.full-height {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
