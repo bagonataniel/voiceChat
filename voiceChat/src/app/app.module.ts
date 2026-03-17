@@ -27,7 +27,10 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatMenuModule} from '@angular/material/menu';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
-import { Splitter, SplitterModule } from 'primeng/splitter';
+import { SplitterModule } from 'primeng/splitter';
+import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { ContextMenuModule } from 'primeng/contextmenu';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @NgModule({
   declarations: [
@@ -55,7 +58,10 @@ import { Splitter, SplitterModule } from 'primeng/splitter';
     MatDialogModule,
     MatStepperModule,
     MatMenuModule,
-    SplitterModule
+    SplitterModule,
+    ScrollPanelModule,
+    ContextMenuModule,
+    ConfirmDialogModule
 ],
   providers: [
     provideHttpClient(),

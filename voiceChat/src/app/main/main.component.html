@@ -1,70 +1,64 @@
 <div class="main-container container-fluid">
-    <div class="right-container">
-        <div class="row">
-            <div class="titlebar">
-                <h2>{{selectedGroupName}}</h2>
-            </div>
-        </div>
-        <div class="row content-area">
-            <div class="call-area">
-                <p-splitter [panelSizes]="[30, 70]" [minSizes]="[20, 60]" class="full-height" layout="vertical" styleClass="mb-8">
-                    <ng-template pTemplate>
-                        <div class="call-container">
-                            <div class="call-participants">
-                                <div *ngFor="let participant of participants" class="participant">
-                                    {{participant[0].charAt(0).toUpperCase()}}
-                                </div>
-                            </div>
-                            <div class="menubar" *ngIf="!isConnected">
-                                <button mat-raised-button (click)="joinRoom()">Join Room</button>
-                            </div>
-                            <div class="menubar" id="connected" *ngIf="isConnected">
-                                <div class="profile">
-                                    <div class="avatar" *ngIf="!room?.localParticipant?.isMicrophoneEnabled">
-                                        {{username.charAt(0).toUpperCase()}}</div>
-                                    <div class="avatar_talking" *ngIf="room?.localParticipant?.isMicrophoneEnabled">
-                                        {{username.charAt(0).toUpperCase()}}</div>
-                                    <div class="name">{{username}}</div>
-                                </div>
-                                <div class="controls">
-                                    <button mat-icon-button
-                                        (click)="toggleMute()"><mat-icon>{{room?.localParticipant?.isMicrophoneEnabled ?
-                                            'mic' :
-                                            'mic_off'}}</mat-icon></button>
-                                    <button mat-icon-button
-                                        (click)="toggleDeafen()"><mat-icon>{{room?.localParticipant?.audioLevel === 0 ?
-                                            'volume_off' : 'volume_up'}}</mat-icon></button>
-                                    <button mat-icon-button
-                                        (click)="leaveRoom()"><mat-icon>exit_to_app</mat-icon></button>
-                                </div>
+    <div class="titlebar">
+        <h2>{{selectedGroupName}}</h2>
+    </div>
+    <div class="content-area">
+        <div class="activity-area">
+            <p-splitter [panelSizes]="[30, 70]" [minSizes]="[20, 60]" class="splitter" layout="vertical">
+                <ng-template pTemplate>
+                    <div class="call-container">
+                        <div class="call-participants">
+                            <div *ngFor="let participant of participants" class="participant">
+                                {{participant[0].charAt(0).toUpperCase()}}
                             </div>
                         </div>
-                    </ng-template>
-                    <ng-template pTemplate>
-                        <div class="chat-container">
-                            <div class="chat-messages">
-                                <div *ngFor="let message of chatMessages" class="chat-message">
-                                    <div class="avatar">{{getSenderInitial(message.sender_id)}}</div>
-                                    <div class="message-content">
-                                        <p><strong>{{getSenderName(message.sender_id)}}</strong>
-                                            {{message.created_at?.getHours()}}:{{message.created_at?.getMinutes()?.toString()?.padStart(2,
-                                            '0')}}</p>
-                                        <p>{{message.content}}</p>
-                                    </div>
-                                </div>
+                        <div class="menubar" *ngIf="!isConnected">
+                            <button mat-raised-button (click)="joinRoom()">Join Room</button>
+                        </div>
+                        <div class="menubar" id="connected" *ngIf="isConnected">
+                            <div class="profile">
+                                <div class="avatar" *ngIf="!room?.localParticipant?.isMicrophoneEnabled">
+                                    {{username.charAt(0).toUpperCase()}}</div>
+                                <div class="avatar_talking" *ngIf="room?.localParticipant?.isMicrophoneEnabled">
+                                    {{username.charAt(0).toUpperCase()}}</div>
+                                <div class="name">{{username}}</div>
                             </div>
-                            <div class="chat-input">
-                                <textarea [(ngModel)]="textMessage" id="messageInput" (keydown)="enterKeyDown()"
-                                    aria-multiline="false" placeholder="Type your message here..."></textarea>
+                            <div class="controls">
                                 <button mat-icon-button
-                                    (click)="sendMessage()"><mat-icon>arrow_upward</mat-icon></button>
+                                    (click)="toggleMute()"><mat-icon>{{room?.localParticipant?.isMicrophoneEnabled ?
+                                        'mic' :
+                                        'mic_off'}}</mat-icon></button>
+                                <button mat-icon-button
+                                    (click)="toggleDeafen()"><mat-icon>{{room?.localParticipant?.audioLevel === 0 ?
+                                        'volume_off' : 'volume_up'}}</mat-icon></button>
+                                <button mat-icon-button (click)="leaveRoom()"><mat-icon>exit_to_app</mat-icon></button>
                             </div>
                         </div>
-                    </ng-template>
-                </p-splitter>
-            </div>
-            <app-group-users [selectedGroup]="selectedGroup" class="users-area">
-            </app-group-users>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate>
+                    <div class="chat-container">
+                        <div class="chat-messages">
+                            <div *ngFor="let message of chatMessages" class="chat-message">
+                                <div class="avatar">{{getSenderInitial(message.sender_id)}}</div>
+                                <div class="message-content">
+                                    <p><strong>{{getSenderName(message.sender_id)}}</strong>
+                                        {{message.created_at?.getHours()}}:{{message.created_at?.getMinutes()?.toString()?.padStart(2,
+                                        '0')}}</p>
+                                    <p>{{message.content}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <textarea [(ngModel)]="textMessage" id="messageInput" (keydown)="enterKeyDown()"
+                                aria-multiline="false" placeholder="Type your message here..."></textarea>
+                            <button mat-icon-button (click)="sendMessage()"><mat-icon>arrow_upward</mat-icon></button>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-splitter>
         </div>
+        <app-group-users [selectedGroup]="selectedGroup" class="users-area">
+        </app-group-users>
     </div>
 </div>

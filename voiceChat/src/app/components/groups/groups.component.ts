@@ -5,6 +5,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { CreateGroupComponent } from '../create-group/create-group.component';
 import { JoinGroupComponent } from '../join-group/join-group.component';
 import { MainService } from '../../services/main.service';
+import { ConfirmationService, MenuItem } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-groups',
@@ -14,16 +16,25 @@ import { MainService } from '../../services/main.service';
 export class GroupsComponent implements OnInit{
   groups: any[] = [];
   userId: string = '';
+  items: MenuItem[] | undefined;
+  selectedGroup: any;
 
-  constructor(private supabaseService: SupabaseService, private dialog: MatDialog, private mainService: MainService) {}
+  constructor(private supabaseService: SupabaseService, private dialog: MatDialog, private mainService: MainService, private router: Router) {}
 
   async ngOnInit(): Promise<void> {
+    this.items = [{ label: 'Leave Group', icon: 'pi pi-sign-out', command: async () => { await this.leaveGroup(this.selectedGroup); }}];
     this.userId = await this.supabaseService.getSession().then((response) => {
       if (response.data.session) {
         return response.data.session.user.id || '';
       }});
     this.fetchGroups();
   }
+
+  async leaveGroup(group: any) {
+    await supabase.from('user_groups').delete().eq('group_id', group.id).eq('user_id', this.userId);
+    this.fetchGroups();
+    this.router.navigate(['/']);
+  };
 
   async fetchGroups() {
     let { data: groups, error } = await supabase.from('groups').select('id, name, color, user_groups!inner(user_id)').eq('user_groups.user_id', this.userId);    
@@ -35,24 +46,21 @@ export class GroupsComponent implements OnInit{
     const dialogRef = this.dialog.open(CreateGroupComponent, {
       width: '500px', // optional
       height: '400px',
-      data: { message: 'Hello from parent!' }, // optional
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog closed', result);
-      this.fetchGroups(); // Refresh the groups list after closing the dialog
+      this.fetchGroups();
     });
   }
 
   addGroup(){
     const dialogRef = this.dialog.open(JoinGroupComponent, {
-      width: '500px', // optional
+      width: '500px',
       height: '400px',
-      data: { message: 'Hello from parent!' }, // optional
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog closed', result);
+      this.fetchGroups();
     });
   }
 }

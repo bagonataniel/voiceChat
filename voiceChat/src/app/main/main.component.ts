@@ -8,11 +8,11 @@ import { supabase } from '../core/supabase.client';
 import { MatMenuTrigger } from '@angular/material/menu';
 
 interface Message {
-    id: string,
-    content: string
-    group_id: number,
-    sender_id: string,
-    created_at?: Date,
+  id: string,
+  content: string
+  group_id: number,
+  sender_id: string,
+  created_at?: Date,
 }
 
 @Component({
@@ -40,9 +40,7 @@ export class MainComponent implements OnInit {
     // this.route.params.subscribe(params => {
     //   this.initialize();
     // });
-    this.initialize().then(() => {
-      this.joinChat();
-    });
+    this.initialize()
   }
 
   async joinChat() {
@@ -62,7 +60,7 @@ export class MainComponent implements OnInit {
   }
 
   addMessage(message: any) {
-    this.chatMessages.push({ id: message.id, content: message.content, group_id: message.group_id, sender_id: message.sender_id, created_at: message.created_at });
+    this.chatMessages.push({ id: message.id, content: message.content, group_id: message.group_id, sender_id: message.sender_id, created_at: new Date(message.created_at) });
   }
 
   async initialize() {
@@ -75,8 +73,9 @@ export class MainComponent implements OnInit {
         this.username = response.data.session.user.user_metadata.name || '_username_';
       }
     });
-    this.getPreviousMessages();
-    this.getGroupMembersDetails();
+    await this.getPreviousMessages();
+    await this.getGroupMembersDetails();
+    await this.joinChat();
     this.mainService.getToken(this.username, this.selectedGroupName).then(token => {
       this.TOKEN = token;
     }).catch(error => {
@@ -98,15 +97,18 @@ export class MainComponent implements OnInit {
   }
 
   async getPreviousMessages() {
-    supabase.from("messages").select("*").eq("group_id", this.selectedGroup).order("created_at", { ascending: true}).limit(50).then(response => {
+    await supabase.from("messages").select("*").eq("group_id", this.selectedGroup).order("created_at", { ascending: true }).limit(50).then(response => {
       if (response.data) {
-        this.chatMessages = response.data.map(msg => ({
-          id: msg.id,
-          content: msg.content,
-          group_id: msg.group_id,
-          sender_id: msg.sender_id,
-          created_at: new Date(msg.created_at)
-        }));
+        this.chatMessages = [
+          ...response.data.map(msg => ({
+            id: msg.id,
+            content: msg.content,
+            group_id: msg.group_id,
+            sender_id: msg.sender_id,
+            created_at: new Date(msg.created_at)
+          })),
+          ...this.chatMessages
+        ];
       }
     });
   }
