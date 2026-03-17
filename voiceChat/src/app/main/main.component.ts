@@ -8,9 +8,11 @@ import { supabase } from '../core/supabase.client';
 import { MatMenuTrigger } from '@angular/material/menu';
 
 interface Message {
-  timestamp?: Date;
-  participant: string;
-  text: string;
+    id: string,
+    content: string
+    group_id: number,
+    sender_id: string,
+    created_at?: Date,
 }
 
 @Component({
@@ -25,25 +27,47 @@ export class MainComponent implements OnInit {
   username: string = '';
   participants: any[] = [];
   chatMessages: Message[] = [];
-  messageText: string = '';
+  textMessage: string = '';
   isConnected: boolean = false;
   isMuted: boolean = false;
-  groups: any[] = [];
   selectedGroup: number = 1;
   selectedGroupName: string = '';
+  groupMembers: any[] = [];
 
   constructor(private _http: HttpClient, private supabase: SupabaseService, private router: Router, private mainService: MainService, private route: ActivatedRoute) { }
 
   async ngOnInit(): Promise<void> {
-    this.route.params.subscribe(params => {
-      this.updateData();
+    // this.route.params.subscribe(params => {
+    //   this.initialize();
+    // });
+    this.initialize().then(() => {
+      this.joinChat();
     });
   }
 
-  async updateData() {
+  async joinChat() {
+    console.log("joined");
+    const channel = supabase.channel('group-chat').on('postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `group_id=eq.${this.selectedGroup}`
+      },
+      (payload) => {
+        console.log('New message:', payload.new)
+        this.addMessage(payload.new)
+      }
+    ).subscribe()
+  }
+
+  addMessage(message: any) {
+    this.chatMessages.push({ id: message.id, content: message.content, group_id: message.group_id, sender_id: message.sender_id, created_at: message.created_at });
+  }
+
+  async initialize() {
     this.selectedGroup = Number(this.route.snapshot.paramMap.get('groupId'));
     this.mainService.groups$.subscribe(groups => {
-      this.groups = groups;
       this.selectedGroupName = groups.find(g => g.id === this.selectedGroup)?.name || '';
     });
     await this.supabase.getSession().then((response) => {
@@ -51,10 +75,39 @@ export class MainComponent implements OnInit {
         this.username = response.data.session.user.user_metadata.name || '_username_';
       }
     });
+    this.getPreviousMessages();
+    this.getGroupMembersDetails();
     this.mainService.getToken(this.username, this.selectedGroupName).then(token => {
       this.TOKEN = token;
     }).catch(error => {
       console.error('Error fetching token:', error);
+    });
+  }
+
+  async getGroupMembersDetails() {
+    await supabase.from('user_groups').select('user_id').eq('group_id', this.selectedGroup).then(async response => {
+      if (response.data) {
+        const userIds = response.data.map(member => member.user_id);
+        await supabase.from('profiles').select('id, name').in('id', userIds).then(userResponse => {
+          if (userResponse.data) {
+            this.groupMembers = userResponse.data;
+          }
+        });
+      }
+    });
+  }
+
+  async getPreviousMessages() {
+    supabase.from("messages").select("*").eq("group_id", this.selectedGroup).order("created_at", { ascending: true}).limit(50).then(response => {
+      if (response.data) {
+        this.chatMessages = response.data.map(msg => ({
+          id: msg.id,
+          content: msg.content,
+          group_id: msg.group_id,
+          sender_id: msg.sender_id,
+          created_at: new Date(msg.created_at)
+        }));
+      }
     });
   }
 
@@ -89,23 +142,6 @@ export class MainComponent implements OnInit {
       this.participants = this.participants.filter(p => p !== (participant.name || participant.identity));
     });
 
-    this.room.registerTextStreamHandler('chat', async (reader, participantInfo) => {
-      const info = reader.info;
-      console.log(
-        `  Topic: ${info.topic}\n` +
-        `  Timestamp: ${info.timestamp}\n` +
-        `  ID: ${info.id}\n` +
-        `  Size: ${info.size}`
-      );
-
-      const text = await reader.readAll();
-      this.chatMessages.push({
-        participant: participantInfo.identity,
-        text: text,
-        timestamp: new Date(info.timestamp)
-      });
-    })
-
     // Subscribe to incoming audio tracks
     this.room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
       if (track.kind === 'audio') {
@@ -127,14 +163,12 @@ export class MainComponent implements OnInit {
   }
 
   async sendMessage() {
-    if (this.room && this.messageText.trim() !== '') {
-      await this.room.localParticipant.sendText(this.messageText, { topic: "chat" });
-      this.chatMessages.push({
-        participant: this.room.localParticipant.identity,
-        text: this.messageText,
-        timestamp: new Date()
+    if (this.textMessage.trim() !== '') {
+      await supabase.from('messages').insert({
+        content: this.textMessage,
+        group_id: this.selectedGroup,
       });
-      this.messageText = '';
+      this.textMessage = '';
     }
   }
 
@@ -161,5 +195,11 @@ export class MainComponent implements OnInit {
     };
   }
 
+  getSenderInitial(sender_id: string): string {
+    return this.groupMembers.find(m => m.id === sender_id)?.name.charAt(0).toUpperCase()
+  }
 
+  getSenderName(sender_id: string): string {
+    return this.groupMembers.find(m => m.id === sender_id)?.name
+  }
 }

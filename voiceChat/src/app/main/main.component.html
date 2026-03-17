@@ -44,17 +44,17 @@
                         <div class="chat-container">
                             <div class="chat-messages">
                                 <div *ngFor="let message of chatMessages" class="chat-message">
-                                    <div class="avatar">{{message.participant.charAt(0).toUpperCase()}}</div>
+                                    <div class="avatar">{{getSenderInitial(message.sender_id)}}</div>
                                     <div class="message-content">
-                                        <p><strong>{{message.participant}}</strong>
-                                            {{message.timestamp?.getHours()}}:{{message.timestamp?.getMinutes()?.toString()?.padStart(2,
+                                        <p><strong>{{getSenderName(message.sender_id)}}</strong>
+                                            {{message.created_at?.getHours()}}:{{message.created_at?.getMinutes()?.toString()?.padStart(2,
                                             '0')}}</p>
-                                        <p>{{message.text}}</p>
+                                        <p>{{message.content}}</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="chat-input">
-                                <textarea [(ngModel)]="messageText" id="messageInput" (keydown)="enterKeyDown()"
+                                <textarea [(ngModel)]="textMessage" id="messageInput" (keydown)="enterKeyDown()"
                                     aria-multiline="false" placeholder="Type your message here..."></textarea>
                                 <button mat-icon-button
                                     (click)="sendMessage()"><mat-icon>arrow_upward</mat-icon></button>
