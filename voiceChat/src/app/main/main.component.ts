@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Participant, Room, RoomEvent, ChatMessage } from 'livekit-client'
+import { Component, ElementRef, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Room, RoomEvent } from 'livekit-client'
 import { SupabaseService } from '../services/supabase.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MainService } from '../services/main.service';
 import { supabase } from '../core/supabase.client';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { SupabaseRealtimeChatService } from '../services/supabase-realtime-chat.service';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 interface Message {
   id: string,
@@ -33,19 +34,21 @@ export class MainComponent implements OnInit {
   selectedGroup: number = 1;
   selectedGroupName: string = '';
   groupMembers: any[] = [];
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+  private messagesSub: Subscription | undefined;
 
-  constructor(private _http: HttpClient, private supabase: SupabaseService, private router: Router, private mainService: MainService, private route: ActivatedRoute) { }
+  constructor(private _http: HttpClient, private supabase: SupabaseService, private router: Router, private mainService: MainService, private route: ActivatedRoute, private chatService: SupabaseRealtimeChatService) { }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit() {
     // this.route.params.subscribe(params => {
     //   this.initialize();
     // });
-    this.initialize()
+    this.initialize();
   }
 
   async joinChat() {
     console.log("joined");
-    const channel = supabase.channel('group-chat').on('postgres_changes',
+    const channel = supabase.channel(`group-chat-${this.selectedGroup}`).on('postgres_changes',
       {
         event: 'INSERT',
         schema: 'public',
@@ -55,6 +58,7 @@ export class MainComponent implements OnInit {
       (payload) => {
         console.log('New message:', payload.new)
         this.addMessage(payload.new)
+        setTimeout(() => this.scrollToBottom(), 10);
       }
     ).subscribe()
   }
@@ -65,23 +69,34 @@ export class MainComponent implements OnInit {
 
   async initialize() {
     this.selectedGroup = Number(this.route.snapshot.paramMap.get('groupId'));
-    this.mainService.groups$.subscribe(groups => {
-      this.selectedGroupName = groups.find(g => g.id === this.selectedGroup)?.name || '';
+    this.chatMessages = [];
+
+    await Promise.all([
+      this.getPreviousMessages(),
+      this.getGroupMembersDetails(),
+      this.fetchSession()
+    ]);
+
+    // await this.joinChat();
+    const newMessages$ = this.chatService.getNewMessages$(this.selectedGroup);
+    this.messagesSub = newMessages$.subscribe((newMsg) => {
+      this.addMessage(newMsg);
+      setTimeout(() => this.scrollToBottom(), 10);
     });
+    const token = await this.mainService.getToken(this.username, this.selectedGroupName);
+    this.TOKEN = token;
+  }
+
+  async fetchSession() {
     await this.supabase.getSession().then((response) => {
       if (response.data.session) {
         this.username = response.data.session.user.user_metadata.name || '_username_';
       }
     });
-    await this.getPreviousMessages();
-    await this.getGroupMembersDetails();
-    await this.joinChat();
-    this.mainService.getToken(this.username, this.selectedGroupName).then(token => {
-      this.TOKEN = token;
-    }).catch(error => {
-      console.error('Error fetching token:', error);
+    this.mainService.groups$.subscribe(groups => {
+      this.selectedGroupName = groups.find(g => g.id === this.selectedGroup)?.name || '';
     });
-  }
+  };
 
   async getGroupMembersDetails() {
     await supabase.from('user_groups').select('user_id').eq('group_id', this.selectedGroup).then(async response => {
@@ -94,6 +109,12 @@ export class MainComponent implements OnInit {
         });
       }
     });
+  }
+
+  scrollToBottom() {
+    try {
+      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+    } catch (err) { console.error('Scroll to bottom failed:', err); }
   }
 
   async getPreviousMessages() {
@@ -110,6 +131,7 @@ export class MainComponent implements OnInit {
           ...this.chatMessages
         ];
       }
+      setTimeout(() => this.scrollToBottom(), 10);
     });
   }
 
