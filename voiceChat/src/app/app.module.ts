@@ -31,6 +31,11 @@ import { SplitterModule } from 'primeng/splitter';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { SettingsComponent } from './settings/settings.component';
+import { MenuModule } from 'primeng/menu';
+import { FileUploadModule } from 'primeng/fileupload';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 
 @NgModule({
   declarations: [
@@ -42,7 +47,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     GroupUsersComponent,
     HomeComponent,
     CreateGroupComponent,
-    JoinGroupComponent
+    JoinGroupComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,
@@ -61,7 +67,12 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     SplitterModule,
     ScrollPanelModule,
     ContextMenuModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    MenuModule,
+    FileUploadModule,
+    ButtonModule,
+    SplitterModule,
+    InputTextModule
 ],
   providers: [
     provideHttpClient(),

@@ -1,14 +1,17 @@
 <div *ngIf="isLoggedIn; else loginTemplate">
-    <p-splitter [panelSizes]="[5, 95]" [minSizes]="[5, 80]" styleClass="mb-8 full-height">
+    <p-splitter [panelSizes]="[5, 95]" [minSizes]="[5, 80]" styleClass="mb-8 full-height" *ngIf="currentRoute !='settings'">
         <ng-template pTemplate>
             <app-groups class="full-height"></app-groups>
         </ng-template>
         <ng-template pTemplate>
-            <div class="right-panel full-height">
+            <div class="full-height">
                 <router-outlet></router-outlet>
             </div>
         </ng-template>
     </p-splitter>
+    <div class="full-height" *ngIf="currentRoute === 'settings'">
+        <router-outlet></router-outlet>
+    </div>
 </div>
 
 <ng-template #loginTemplate>

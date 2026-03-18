@@ -6,12 +6,14 @@ import { LoginComponent } from './login/login.component';
 import { authGuardGuard } from './guards/auth-guard.guard';
 import { loggedInGuard } from './guards/logged-in.guard';
 import { HomeComponent } from './home/home.component';
+import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent, canActivate: [authGuardGuard]},
   {path: 'main/:groupId', component: MainComponent, canActivate: [authGuardGuard]},
   {path: 'register', component: RegisterComponent},
-  {path: 'login', component: LoginComponent, canActivate: [loggedInGuard]}
+  {path: 'login', component: LoginComponent, canActivate: [loggedInGuard]},
+  {path: 'settings', component: SettingsComponent, canActivate: [authGuardGuard]}
 ];
 
 @NgModule({

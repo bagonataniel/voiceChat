@@ -1,0 +1,20 @@
+<div class="main-container full-height">
+    <div class="menu-container full-height">
+        <p-menu [model]="items" styleClass="w-full md:w-60" />
+    </div>
+    <div class="settings-container full-height">
+        <div class="profile-details settings-element">
+            <img [src]="profilePicUrl" alt="">
+            <div class="flex flex-col gap-2">
+                <label for="username">Username</label>
+                <!-- <input type="text" pInputText [(ngModel)]="accountInformation.data.session.user.email" disabled /> -->
+            </div>
+        </div>
+        <div class="upload-avatar settings-element">
+            <p-fileupload #fu mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="demo[]"
+                url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*" maxFileSize="1000000"
+                (onUpload)="onUpload($event)" />
+            <p-button label="Upload" (onClick)="fu.upload()" severity="secondary" />
+        </div>
+    </div>
+</div>
