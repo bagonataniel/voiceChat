@@ -40,9 +40,6 @@ export class MainComponent implements OnInit {
   constructor(private _http: HttpClient, private supabase: SupabaseService, private router: Router, private mainService: MainService, private route: ActivatedRoute, private chatService: SupabaseRealtimeChatService) { }
 
   ngOnInit() {
-    // this.route.params.subscribe(params => {
-    //   this.initialize();
-    // });
     this.initialize();
   }
 
@@ -102,7 +99,7 @@ export class MainComponent implements OnInit {
     await supabase.from('user_groups').select('user_id').eq('group_id', this.selectedGroup).then(async response => {
       if (response.data) {
         const userIds = response.data.map(member => member.user_id);
-        await supabase.from('profiles').select('id, name').in('id', userIds).then(userResponse => {
+        await supabase.from('profiles').select('id, name, avatar_url').in('id', userIds).then(userResponse => {
           if (userResponse.data) {
             this.groupMembers = userResponse.data;
           }
@@ -219,8 +216,8 @@ export class MainComponent implements OnInit {
     };
   }
 
-  getSenderInitial(sender_id: string): string {
-    return this.groupMembers.find(m => m.id === sender_id)?.name.charAt(0).toUpperCase()
+  getSenderAvatar(sender_id: string): string {
+    return this.groupMembers.find(m => m.id === sender_id)?.avatar_url
   }
 
   getSenderName(sender_id: string): string {

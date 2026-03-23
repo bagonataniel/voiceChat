@@ -1,18 +1,19 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
-.main-container{
+
+.main-container {
     display: flex;
     flex-direction: row;
 }
 
-.menu-container{
+.menu-container {
     width: 20%;
     padding: 20px;
 }
 
-.settings-container{
+.settings-container {
     flex: 1;
     padding: 20px;
     display: flex;
@@ -20,18 +21,28 @@
     gap: 20px;
 }
 
-.full-height{
+.full-height {
     height: 100vh;
 }
-.settings-element{
+
+.settings-element {
     background-color: var(--panel-slate);
     border-radius: 10px;
     padding: 10px;
     color: var(--text-light);
 }
-.upload-avatar{
+
+.upload-avatar {
     height: 200px;
 }
-.profile-details img{
-    width: 100px;
+
+.profile{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+.profile-details{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }

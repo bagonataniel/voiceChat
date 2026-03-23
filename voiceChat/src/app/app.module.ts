@@ -36,6 +36,8 @@ import { MenuModule } from 'primeng/menu';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { PopoverModule } from 'primeng/popover';
+import { Avatar } from 'primeng/avatar';
 
 @NgModule({
   declarations: [
@@ -72,7 +74,9 @@ import { InputTextModule } from 'primeng/inputtext';
     FileUploadModule,
     ButtonModule,
     SplitterModule,
-    InputTextModule
+    InputTextModule,
+    PopoverModule,
+    Avatar
 ],
   providers: [
     provideHttpClient(),

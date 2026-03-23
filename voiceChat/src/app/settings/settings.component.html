@@ -4,15 +4,39 @@
     </div>
     <div class="settings-container full-height">
         <div class="profile-details settings-element">
-            <img [src]="profilePicUrl" alt="">
-            <div class="flex flex-col gap-2">
-                <label for="username">Username</label>
-                <!-- <input type="text" pInputText [(ngModel)]="accountInformation.data.session.user.email" disabled /> -->
+            <div class="profile">
+                <p-avatar image="{{profilePicUrl}}" class="mr-2" size="xlarge" shape="circle" />
+                <div class="info">
+                    <h5>{{accountInformation[0].name}}</h5>
+                    <p>{{accountInformation.user.email}}</p>
+                </div>
+            </div>
+            <div class="flex flex-col gap-2" *ngIf="accountInformation">
+                <table>
+                    <thead>
+                        <th>Personal details</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Email</td>
+                            <td>{{accountInformation.user.email}}</td>
+                        </tr>
+                        <tr>
+                            <td>Username</td>
+                            <td>{{accountInformation[0].name}}</td>
+                        </tr>
+                        <tr>
+                            <td>Account created</td>
+                            <td>{{accountInformation.user.created_at}}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         <div class="upload-avatar settings-element">
+            <h5>Change profile picture</h5>
             <p-fileupload #fu mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="demo[]"
-                url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*" maxFileSize="1000000"
+                url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*" maxFileSize="3000000"
                 (onUpload)="onUpload($event)" />
             <p-button label="Upload" (onClick)="fu.upload()" severity="secondary" />
         </div>

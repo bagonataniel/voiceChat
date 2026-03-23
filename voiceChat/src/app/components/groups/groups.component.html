@@ -3,6 +3,6 @@
         <div class="avatar" [style.background-color]="group.color" *ngFor="let group of groups" [routerLink]="['/main', group.id]" (contextmenu)="cm.show($event); selectedGroup = group">{{group.name.charAt(0).toUpperCase()}}</div>
         <div class="avatar" style="background-color: var(--panel-slate);" (click)="addGroup()"><mat-icon>group</mat-icon></div>
         <div class="avatar" style="background-color: var(--panel-slate);" (click)="createGroup()"><mat-icon>add</mat-icon></div>
+        <div class="avatar" style="background-color: var(--panel-slate);" [routerLink]="['settings']"><mat-icon>settings</mat-icon></div>
 </div>
 <p-contextmenu #cm [model]="items"/>
-<!-- <p-confirmdialog /> -->

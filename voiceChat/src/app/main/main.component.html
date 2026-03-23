@@ -40,7 +40,7 @@
                     <div class="chat-container">
                         <div class="chat-messages" #scrollContainer>
                             <div *ngFor="let message of chatMessages" class="chat-message">
-                                <div class="avatar">{{getSenderInitial(message.sender_id)}}</div>
+                                <p-avatar image="{{getSenderAvatar(message.sender_id)}}" class="mr-2" size="large" shape="circle"/>
                                 <div class="message-content">
                                     <p><strong>{{getSenderName(message.sender_id)}}</strong>
                                         {{message.created_at?.getHours()}}:{{message.created_at?.getMinutes()?.toString()?.padStart(2,

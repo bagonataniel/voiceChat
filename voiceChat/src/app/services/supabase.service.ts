@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
 import { supabase } from '../core/supabase.client';
 import { BehaviorSubject } from 'rxjs';
+import { User } from '@supabase/supabase-js';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SupabaseService {
   private loggedInSubject = new BehaviorSubject<boolean>(false);
-
-  // Expose as observable for components to subscribe
   loggedIn$ = this.loggedInSubject.asObservable();
+
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  currentUser$ = this.currentUserSubject.asObservable();
 
   constructor() {
     this.initAuthState();
@@ -24,8 +26,21 @@ export class SupabaseService {
     });
   }
 
+  setUser(user: User | null) {
+    this.currentUserSubject.next(user);
+  }
+
+  getUser(): User | null {
+    return this.currentUserSubject.value;
+  }
+
+  clearUser() {
+    this.currentUserSubject.next(null);
+  }
+
+
   async signUp(email: string, password: string, name: string) {
-    const { data, error } = await supabase.auth.signUp({email, password, options: { data: { name } }});
+    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
     if (data.user) {
       await supabase.from('profiles').insert([
         { id: data.user.id, name: name, email: email }

@@ -17,11 +17,13 @@ export class SettingsComponent implements OnInit {
   constructor(private supabase: SupabaseService) { }
 
   async ngOnInit() {
-    await this.supabase.getSession().then(result => {
-      this.accountInformation = result
-    });
-    this.getProfilePicture()
-    console.log(this.accountInformation);
+    const { data, error } = await supabase.auth.getUser()
+    if (error || !data.user) {
+      throw new Error("User not authenticated")
+    }
+    this.accountInformation = data
+
+    this.getProfileData()
     this.items = [
       {
         label: 'Account',
@@ -43,21 +45,35 @@ export class SettingsComponent implements OnInit {
     ];
   }
 
-  getProfilePicture() {
-    const { data } = supabase.storage.from('avatars').getPublicUrl(`public/${this.accountInformation.data.session.user.id}/avatar`)
-    this.profilePicUrl = data.publicUrl
-    console.log(data);
+  async getProfileData() {
+    const { data, error } = await supabase.from('profiles').select("*").eq("id", this.accountInformation.user.id)
+    this.accountInformation = {...this.accountInformation,...data}
+    console.log(this.accountInformation);
+    if (!error) {
+      this.profilePicUrl = data[0].avatar_url
+    }
   }
 
-  onUpload(event: any) {
+  async onUpload(event: any) {
     const files: File[] = event.files;
-    const filePath = `public/${this.accountInformation.data.session.user.id}/avatar`
-    console.log(event.files[0])
-
-    supabase.storage.from("avatars").update(filePath, files[0]).then(response => {
-      console.log(response);
-      supabase.from("profiles").update({avatar_url: ""})
+    const userId = this.accountInformation.user.id
+    const filePath = `${userId}/avatar.${files[0].name.split('.').pop()}`
+    supabase.storage.from("avatars").upload(filePath, files[0], { upsert: true }).then(async response => {
+      await this.updateAvatarUrl(filePath)
     })
+  }
+
+  async updateAvatarUrl(filePath: string) {
+    const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(filePath)
+    console.log(this.accountInformation.user.id);
+    const { data, error } = await supabase.from("profiles").update({ avatar_url: publicUrlData.publicUrl }).eq("id", this.accountInformation.user.id)
+    if (error) {
+      console.error("Failed to update profile:", error)
+    } else {
+      this.accountInformation[0].avatar_url = publicUrlData.publicUrl
+      this.profilePicUrl = publicUrlData.publicUrl
+      console.log("Profile updated:", data)
+    }
   }
 
 }
