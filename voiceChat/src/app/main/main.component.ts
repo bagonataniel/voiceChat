@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Room, RoomEvent } from 'livekit-client'
+import { LocalParticipant, Room, RoomEvent } from 'livekit-client'
 import { SupabaseService } from '../services/supabase.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MainService } from '../services/main.service';
@@ -26,11 +26,13 @@ export class MainComponent implements OnInit {
   TOKEN: string = "";
   room: Room | null = null;
   username: string = '';
+  localParticipant!: LocalParticipant;
   participants: any[] = [];
   chatMessages: Message[] = [];
   textMessage: string = '';
   isConnected: boolean = false;
   isMuted: boolean = false;
+  isDeafened: boolean = false;
   selectedGroup: number = 1;
   selectedGroupName: string = '';
   groupMembers: any[] = [];
@@ -74,7 +76,6 @@ export class MainComponent implements OnInit {
       this.fetchSession()
     ]);
 
-    // await this.joinChat();
     const newMessages$ = this.chatService.getNewMessages$(this.selectedGroup);
     this.messagesSub = newMessages$.subscribe((newMsg) => {
       this.addMessage(newMsg);
@@ -143,6 +144,8 @@ export class MainComponent implements OnInit {
     this.room = new Room();
     // Connect to LiveKit room
     await this.room.connect(this.LIVEKIT_URL, this.TOKEN);
+    this.localParticipant = this.room.localParticipant;
+    await this.localParticipant.setMicrophoneEnabled(true);
     this.isConnected = true;
     console.log('Connected to room:', this.room.name);
 
@@ -151,7 +154,6 @@ export class MainComponent implements OnInit {
       this.room.localParticipant.name || this.room.localParticipant.identity,
       ...remoteNames
     ];
-    console.log(this.participants);
 
     this.room.on(RoomEvent.ParticipantConnected, (participant) => {
       console.log('Participant connected:', participant.identity);
@@ -173,14 +175,12 @@ export class MainComponent implements OnInit {
     });
 
     // Get microphone
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    // const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
     // Publish local audio
-    for (const track of stream.getTracks()) {
-      await this.room.localParticipant.publishTrack(track);
-    }
-
-    console.log('Microphone enabled');
+    // for (const track of stream.getTracks()) {
+    //   await this.room.localParticipant.publishTrack(track);
+    // }
   }
 
   async sendMessage() {
@@ -201,18 +201,30 @@ export class MainComponent implements OnInit {
     }
   }
 
-  toggleMute() {
+  async toggleMute() {
     if (this.room) {
-      console.log(this.room.localParticipant.audioTrackPublications);
       this.isMuted = !this.isMuted;
-      this.room.localParticipant.setMicrophoneEnabled(!this.isMuted);
-      console.log("muted:", this.isMuted);
+      await this.localParticipant.setMicrophoneEnabled(!this.isMuted);
     }
   }
 
-  toggleDeafen() {
+  async toggleDeafen() {
+    this.isDeafened = !this.isDeafened;
+    await this.localParticipant.setMicrophoneEnabled(!this.isMuted);
     if (this.room) {
-      this.room.localParticipant.audioLevel = this.room.localParticipant.audioLevel === 0 ? 1 : 0;
+      this.room.remoteParticipants.forEach(participant => {
+        participant.audioTrackPublications.forEach(publication => {
+          const track = publication.audioTrack;
+          if (track) {
+            if (this.isDeafened) {
+              track.detach();
+            }
+            else {
+              track.attach();
+            }
+          }
+        })
+      })
     };
   }
 
