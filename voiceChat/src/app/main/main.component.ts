@@ -39,7 +39,7 @@ export class MainComponent implements OnInit {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   private messagesSub: Subscription | undefined;
 
-  constructor(private _http: HttpClient, private supabase: SupabaseService, private router: Router, private mainService: MainService, private route: ActivatedRoute, private chatService: SupabaseRealtimeChatService) { }
+  constructor(private supabase: SupabaseService, private router: Router, private mainService: MainService, private route: ActivatedRoute, private chatService: SupabaseRealtimeChatService) { }
 
   ngOnInit() {
     this.initialize();
@@ -87,7 +87,7 @@ export class MainComponent implements OnInit {
 
   async fetchSession() {
     await this.supabase.getSession().then((response) => {
-      if (response.data.session) {
+      if (response.data.session) {        
         this.username = response.data.session.user.user_metadata.name || '_username_';
       }
     });
@@ -97,15 +97,8 @@ export class MainComponent implements OnInit {
   };
 
   async getGroupMembersDetails() {
-    await supabase.from('user_groups').select('user_id').eq('group_id', this.selectedGroup).then(async response => {
-      if (response.data) {
-        const userIds = response.data.map(member => member.user_id);
-        await supabase.from('profiles').select('id, name, avatar_url').in('id', userIds).then(userResponse => {
-          if (userResponse.data) {
-            this.groupMembers = userResponse.data;
-          }
-        });
-      }
+    this.mainService.selectedGroupUsers$.subscribe((users) => {
+      this.groupMembers = users;      
     });
   }
 
@@ -173,14 +166,6 @@ export class MainComponent implements OnInit {
         console.log('Receiving audio from', participant.identity);
       }
     });
-
-    // Get microphone
-    // const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-    // Publish local audio
-    // for (const track of stream.getTracks()) {
-    //   await this.room.localParticipant.publishTrack(track);
-    // }
   }
 
   async sendMessage() {

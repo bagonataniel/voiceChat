@@ -63,4 +63,8 @@ export class GroupsComponent implements OnInit{
       this.fetchGroups();
     });
   }
+
+  openSettings(){
+    this.mainService.setSettingsVisibility(true);
+  }
 }

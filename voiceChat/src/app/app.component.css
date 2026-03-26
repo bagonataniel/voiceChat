@@ -7,6 +7,7 @@
   height: 100%;
   width: 100%;
   background-color: var(--background-dark);
+  overflow: hidden;
 }
 .left-container{
     height: 100vh;

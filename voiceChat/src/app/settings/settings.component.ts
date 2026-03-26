@@ -13,6 +13,7 @@ export class SettingsComponent implements OnInit {
   items: MenuItem[] | undefined;
   accountInformation: any;
   profilePicUrl: string = "";
+  editingStatus: boolean = false;
 
   constructor(private supabase: SupabaseService) { }
 
@@ -76,4 +77,17 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  async editStatus(){
+    if (this.editingStatus) {
+      const { data, error } = await supabase.from("profiles").update({ status_message: this.accountInformation[0].status_message}).eq("id", this.accountInformation.user.id)
+      if (error) {
+        console.log("Failed to update profile status", error);
+        return;
+      }
+      this.editingStatus = !this.editingStatus;
+    }
+    else{
+      this.editingStatus = !this.editingStatus;
+    }
+  }
 }

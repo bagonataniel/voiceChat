@@ -1,6 +1,7 @@
 * {
     margin: 0;
     padding: 0;
+    color: var(--text-light);
 }
 
 .main-container {
@@ -45,4 +46,24 @@
     display: flex;
     flex-direction: column;
     gap: 30px;
+}
+table tr{
+    height: 50px;
+}
+table tr td{
+    padding-right: 100px;
+}
+.inputField{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.inputField button{
+    padding: 0;
+    margin: 0;
+}
+.close-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }

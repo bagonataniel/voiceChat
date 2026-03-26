@@ -1,17 +1,16 @@
 <div class="users-area">
     <p>A csoport tagjai</p>
     <mat-card class="user" *ngFor="let user of GroupParticipants" (click)="selectUser($event, user)">
-        <!-- <img [src]="user.profiles.avatar_url" alt="" id="avatar"> -->
-         <p-avatar image="{{user.profiles.avatar_url}}" class="mr-2" size="large" shape="circle" />
-        <p>{{user.profiles.name}}</p>
+         <p-avatar image="{{user.avatar_url}}" class="mr-2" size="large" shape="circle" />
+        <p>{{user.name}}</p>
     </mat-card>
     <button mat-raised-button (click)="logout()">Logout</button>
 
     <p-popover #op (onHide)="selectedUser = null">
         <ng-template pTemplate="content">
             <div *ngIf="selectedUser" class="selectionMenu">
-                <p-avatar image="{{selectedUser.profiles.avatar_url}}" class="mr-2" size="large" shape="circle" />
-                <p>{{selectedUser.profiles.name}}</p>
+                <p-avatar image="{{selectedUser.avatar_url}}" class="mr-2" size="large" shape="circle" />
+                <p>{{selectedUser.name}}</p>
             </div>
         </ng-template>
     </p-popover>

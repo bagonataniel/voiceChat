@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
 import { supabase } from '../../core/supabase.client';
 import { Popover } from 'primeng/popover';
+import { MainService } from '../../services/main.service';
 
 @Component({
   selector: 'app-group-users',
@@ -15,7 +16,7 @@ export class GroupUsersComponent implements OnInit, OnChanges {
   @ViewChild('op') op!: Popover;
   selectedUser: any = [];
 
-  constructor(private supabase: SupabaseService, private router: Router) { }
+  constructor(private supabase: SupabaseService, private router: Router, private mainService: MainService) { }
 
   ngOnInit() {
     this.selectGroupUsers();
@@ -28,12 +29,10 @@ export class GroupUsersComponent implements OnInit, OnChanges {
   }
 
   async selectGroupUsers() {
-    const { data, error } = await supabase.from('user_groups').select(`user_id, profiles!inner(name, avatar_url)`).eq('group_id', this.selectedGroup);
-    this.GroupParticipants = data || [];
-    if (error) {
-      console.error('Error fetching group participants:', error);
-      return;
-    }
+    this.mainService.setSelectedGroupUsers(this.selectedGroup);
+    this.mainService.selectedGroupUsers$.subscribe((data) => {
+      this.GroupParticipants = data;
+    });
   }
 
   logout() {

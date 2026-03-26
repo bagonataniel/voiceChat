@@ -3,15 +3,18 @@
         <p-menu [model]="items" styleClass="w-full md:w-60" />
     </div>
     <div class="settings-container full-height">
+        <div class="close-container">
+            <h3>Personal information</h3>
+        </div>
         <div class="profile-details settings-element">
             <div class="profile">
                 <p-avatar image="{{profilePicUrl}}" class="mr-2" size="xlarge" shape="circle" />
                 <div class="info">
-                    <h5>{{accountInformation[0].name}}</h5>
-                    <p>{{accountInformation.user.email}}</p>
+                    <h5>{{accountInformation?.[0]?.name}}</h5>
+                    <p>{{accountInformation?.user?.email}}</p>
                 </div>
             </div>
-            <div class="flex flex-col gap-2" *ngIf="accountInformation">
+            <div class="flex flex-col gap-2">
                 <table>
                     <thead>
                         <th>Personal details</th>
@@ -19,15 +22,23 @@
                     <tbody>
                         <tr>
                             <td>Email</td>
-                            <td>{{accountInformation.user.email}}</td>
+                            <td>{{accountInformation?.user?.email}}</td>
                         </tr>
                         <tr>
                             <td>Username</td>
-                            <td>{{accountInformation[0].name}}</td>
+                            <td>{{accountInformation?.[0]?.name}}</td>
+                        </tr>
+                        <tr *ngIf="accountInformation && accountInformation[0] as acc">
+                            <td>Status message</td>
+                            <td class="inputField">
+                                <input type="text" pInputText [(ngModel)]="accountInformation[0].status_message" [disabled]="!editingStatus" [pSize]="'small'"/>
+                                <button mat-icon-button *ngIf="!editingStatus" (click)="editStatus()"><mat-icon>edit</mat-icon></button>
+                                <button mat-icon-button *ngIf="editingStatus" (click)="editStatus()"><mat-icon>check_circle</mat-icon></button>
+                            </td>
                         </tr>
                         <tr>
                             <td>Account created</td>
-                            <td>{{accountInformation.user.created_at}}</td>
+                            <td>{{accountInformation?.user?.created_at}}</td>
                         </tr>
                     </tbody>
                 </table>

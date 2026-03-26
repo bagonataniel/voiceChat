@@ -38,6 +38,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PopoverModule } from 'primeng/popover';
 import { Avatar } from 'primeng/avatar';
+import { DrawerModule } from 'primeng/drawer';
 
 @NgModule({
   declarations: [
@@ -76,7 +77,8 @@ import { Avatar } from 'primeng/avatar';
     SplitterModule,
     InputTextModule,
     PopoverModule,
-    Avatar
+    Avatar,
+    DrawerModule
 ],
   providers: [
     provideHttpClient(),
