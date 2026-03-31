@@ -10,7 +10,10 @@
         <ng-template pTemplate="content">
             <div *ngIf="selectedUser" class="selectionMenu">
                 <p-avatar image="{{selectedUser.avatar_url}}" class="mr-2" size="large" shape="circle" />
-                <p>{{selectedUser.name}}</p>
+                <div class="details">
+                    <p>{{selectedUser.name}}</p>
+                    <p>{{selectedUser.status_message}}</p>
+                </div>
             </div>
         </ng-template>
     </p-popover>

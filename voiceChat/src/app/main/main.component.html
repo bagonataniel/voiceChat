@@ -8,19 +8,19 @@
                 <ng-template pTemplate>
                     <div class="call-container">
                         <div class="call-participants">
-                            <div *ngFor="let participant of participants" class="participant">
+                            <!-- <div *ngFor="let participant of participants" class="participant">
                                 {{participant[0].charAt(0).toUpperCase()}}
-                            </div>
+                            </div> -->
+                            <p-avatar *ngFor="let participant of participants" image="{{getParticipantAvatar(participant)}}" class="mr-2" size="large" shape="circle"/>
                         </div>
                         <div class="menubar" *ngIf="!isConnected">
                             <button mat-raised-button (click)="joinRoom()">Join Room</button>
                         </div>
                         <div class="menubar" id="connected" *ngIf="isConnected">
                             <div class="profile">
-                                <div class="avatar" *ngIf="!room?.localParticipant?.isMicrophoneEnabled">
-                                    {{username.charAt(0).toUpperCase()}}</div>
-                                <div class="avatar_talking" *ngIf="room?.localParticipant?.isMicrophoneEnabled">
-                                    {{username.charAt(0).toUpperCase()}}</div>
+                                <div class="avatar" *ngIf="!room?.localParticipant?.isMicrophoneEnabled">{{username.charAt(0).toUpperCase()}}</div>
+                                <p-avatar class="avatar" *ngIf="!room?.localParticipant?.isMicrophoneEnabled" image="{{getParticipantAvatar(username)}}" class="mr-2" size="large" shape="circle"/>
+                                <p-avatar class="avatar_talking" *ngIf="room?.localParticipant?.isMicrophoneEnabled" image="{{getParticipantAvatar(username)}}" class="mr-2" size="large" shape="circle"/>
                                 <div class="name">{{username}}</div>
                             </div>
                             <div class="controls">

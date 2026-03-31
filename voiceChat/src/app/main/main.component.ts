@@ -22,7 +22,7 @@ interface Message {
   styleUrl: './main.component.css'
 })
 export class MainComponent implements OnInit {
-  LIVEKIT_URL: string = "wss://chatapp-sd7xe8on.livekit.cloud";
+  LIVEKIT_URL: string = "wss://voicechat-iw60dbr8.livekit.cloud";
   TOKEN: string = "";
   room: Room | null = null;
   username: string = '';
@@ -86,9 +86,12 @@ export class MainComponent implements OnInit {
   }
 
   async fetchSession() {
-    await this.supabase.getSession().then((response) => {
+    await this.supabase.getSession().then(async (response) => {
       if (response.data.session) {        
-        this.username = response.data.session.user.user_metadata.name || '_username_';
+        await supabase.from('profiles').select('*').eq('id', response.data.session.user.id).single().then(profileRes => {
+          if (profileRes.data) {
+            this.username = profileRes.data.name || '_username_';
+          }});
       }
     });
     this.mainService.groups$.subscribe(groups => {
@@ -182,6 +185,7 @@ export class MainComponent implements OnInit {
     if (this.room) {
       this.room.disconnect();
       this.isConnected = false;
+      this.participants = this.participants.filter(p => p !== (this.username || this.localParticipant.identity));
       console.log('Disconnected');
     }
   }
@@ -215,6 +219,11 @@ export class MainComponent implements OnInit {
 
   getSenderAvatar(sender_id: string): string {
     return this.groupMembers.find(m => m.id === sender_id)?.avatar_url
+  }
+
+  getParticipantAvatar(participant: string): string {
+    const member = this.groupMembers.find(m => m.name === participant);
+    return member ? member.avatar_url : '';
   }
 
   getSenderName(sender_id: string): string {

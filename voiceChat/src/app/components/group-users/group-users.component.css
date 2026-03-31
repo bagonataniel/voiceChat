@@ -22,3 +22,8 @@
     flex-direction: row;
     width: 200px;
 }
+.details{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}

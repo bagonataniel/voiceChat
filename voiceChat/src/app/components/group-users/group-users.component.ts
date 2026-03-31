@@ -14,7 +14,7 @@ export class GroupUsersComponent implements OnInit, OnChanges {
   GroupParticipants: any[] = [];
   @Input() selectedGroup!: number;
   @ViewChild('op') op!: Popover;
-  selectedUser: any = [];
+  selectedUser: any = null;
 
   constructor(private supabase: SupabaseService, private router: Router, private mainService: MainService) { }
 
@@ -48,13 +48,13 @@ export class GroupUsersComponent implements OnInit, OnChanges {
     this.op.hide();
   }
 
-  selectUser(event: any, user: any) {
-    if (this.selectedUser?.user_id === user.user_id) {
+  selectUser(event: any, user: any) {    
+    if (this.selectedUser?.id === user.id) {
       this.op.hide();
       this.selectedUser = null;
     } else {
-      this.selectedUser = user;
-      this.op.show(event);
+      this.selectedUser = user;      
+      this.op.show(event);     
       if (this.op.container) {
         this.op.align();
       }

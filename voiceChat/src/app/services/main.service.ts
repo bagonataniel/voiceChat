@@ -34,7 +34,7 @@ export class MainService {
     await supabase.from('user_groups').select('user_id').eq('group_id', groupId).then(async response => {
       if (response.data) {
         const userIds = response.data.map(member => member.user_id);
-        await supabase.from('profiles').select('id, name, avatar_url').in('id', userIds).then(userResponse => {
+        await supabase.from('profiles').select('*').in('id', userIds).then(userResponse => {
           if (userResponse.data) {
             this.selectedGroupUsers.next(userResponse.data as any)
           }
