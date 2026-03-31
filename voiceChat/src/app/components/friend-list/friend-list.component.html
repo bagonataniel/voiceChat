@@ -1,0 +1,10 @@
+<div class="friend-list">
+    <h4>Friends</h4>
+    <div class="friend" *ngFor="let friend of friends">
+        <p-avatar image="{{friend.avatar_url}}" class="mr-2" size="large" shape="circle" />
+        <p>{{friend.name}}</p>
+        <p *ngIf="friend.status == 'pending'">{{friend.status}}</p>
+        <p>{{friend.created_at | date:'yyyy/MM/dd HH:mm'}}</p>
+        <button mat-raised-button (click)="acceptFriendRequest(friend.id)" *ngIf="friend.status == 'pending' && !friend.sentByCurrentUser">Accept</button>
+    </div>
+</div>

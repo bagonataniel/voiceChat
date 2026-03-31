@@ -42,9 +42,7 @@
                             <div *ngFor="let message of chatMessages" class="chat-message">
                                 <p-avatar image="{{getSenderAvatar(message.sender_id)}}" class="mr-2" size="large" shape="circle"/>
                                 <div class="message-content">
-                                    <p><strong>{{getSenderName(message.sender_id)}}</strong>
-                                        {{message.created_at?.getHours()}}:{{message.created_at?.getMinutes()?.toString()?.padStart(2,
-                                        '0')}}</p>
+                                    <p><strong>{{getSenderName(message.sender_id)}}</strong>{{message.created_at | date:'yyyy.MM.dd HH:mm'}}</p>
                                     <p>{{message.content}}</p>
                                 </div>
                             </div>

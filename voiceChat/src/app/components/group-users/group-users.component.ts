@@ -15,11 +15,27 @@ export class GroupUsersComponent implements OnInit, OnChanges {
   @Input() selectedGroup!: number;
   @ViewChild('op') op!: Popover;
   selectedUser: any = null;
+  userId: string = '';
+  friendIds: string[] = [];
 
   constructor(private supabase: SupabaseService, private router: Router, private mainService: MainService) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.selectGroupUsers();
+    this.userId = await this.supabase.getUserId();
+    const { data, error } = await supabase.from('friends').select("*").or(`user_id.eq.${this.userId},friend_id.eq.${this.userId}`).eq("status", "accepted");
+    if (error) {
+      console.error('Error fetching friends:', error);
+    } else {     
+      data.map((friend) => {
+        if (friend.user_id === this.userId) {
+          this.friendIds.push(friend.friend_id);
+        }
+        else if (friend.friend_id === this.userId) {
+          this.friendIds.push(friend.user_id);
+        }        
+      })
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -59,5 +75,15 @@ export class GroupUsersComponent implements OnInit, OnChanges {
         this.op.align();
       }
     }
+  }
+
+  async addFriend(user: any) {
+    await supabase.from('friends').insert({ user_id: this.userId, friend_id: user.id}).then(({ data, error }) => {
+      if (error) {
+        console.error('Error adding friend:', error);
+      } else {
+        console.log('Friend added successfully:', data);
+      }
+    });
   }
 }

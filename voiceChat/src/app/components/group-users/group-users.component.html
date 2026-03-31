@@ -4,8 +4,6 @@
          <p-avatar image="{{user.avatar_url}}" class="mr-2" size="large" shape="circle" />
         <p>{{user.name}}</p>
     </mat-card>
-    <button mat-raised-button (click)="logout()">Logout</button>
-
     <p-popover #op (onHide)="selectedUser = null">
         <ng-template pTemplate="content">
             <div *ngIf="selectedUser" class="selectionMenu">
@@ -14,6 +12,7 @@
                     <p>{{selectedUser.name}}</p>
                     <p>{{selectedUser.status_message}}</p>
                 </div>
+                <button mat-raised-button *ngIf="selectedUser.id !== userId && !friendIds.includes(selectedUser.id)" (click)="addFriend(selectedUser)">Add friend</button>
             </div>
         </ng-template>
     </p-popover>

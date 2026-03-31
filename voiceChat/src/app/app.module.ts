@@ -39,6 +39,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PopoverModule } from 'primeng/popover';
 import { Avatar } from 'primeng/avatar';
 import { DrawerModule } from 'primeng/drawer';
+import { FriendListComponent } from './components/friend-list/friend-list.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { DrawerModule } from 'primeng/drawer';
     HomeComponent,
     CreateGroupComponent,
     JoinGroupComponent,
-    SettingsComponent
+    SettingsComponent,
+    FriendListComponent
   ],
   imports: [
     BrowserModule,

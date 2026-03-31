@@ -30,14 +30,14 @@ export class SupabaseService {
     this.currentUserSubject.next(user);
   }
 
-  getUser(): User | null {
-    return this.currentUserSubject.value;
-  }
-
   clearUser() {
     this.currentUserSubject.next(null);
   }
 
+  async getUserId(): Promise<string> {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user ? user.id : '';
+  }
 
   async signUp(email: string, password: string, name: string) {
     const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });

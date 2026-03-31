@@ -3,6 +3,8 @@ import { MenuItem } from 'primeng/api';
 import { SupabaseService } from '../services/supabase.service';
 import { UploadEvent } from 'primeng/fileupload';
 import { supabase } from '../core/supabase.client';
+import { Router } from '@angular/router';
+import { MainService } from '../services/main.service';
 
 @Component({
   selector: 'app-settings',
@@ -15,7 +17,7 @@ export class SettingsComponent implements OnInit {
   profilePicUrl: string = "";
   editingStatus: boolean = false;
 
-  constructor(private supabase: SupabaseService) { }
+  constructor(private supabase: SupabaseService, private router: Router, private mainService: MainService) { }
 
   async ngOnInit() {
     const { data, error } = await supabase.auth.getUser()
@@ -39,7 +41,8 @@ export class SettingsComponent implements OnInit {
           },
           {
             label: 'Logout',
-            icon: 'pi pi-search'
+            icon: 'pi pi-search',
+            command: () => this.logout()
           }
         ]
       }
@@ -89,5 +92,15 @@ export class SettingsComponent implements OnInit {
     else{
       this.editingStatus = !this.editingStatus;
     }
+  }
+
+  logout() {
+    this.supabase.signOut().then(() => {
+      console.log('Logged out successfully');
+      this.mainService.setSettingsVisibility(false);
+      this.router.navigate(['/login']);
+    }).catch((error) => {
+      console.error('Error logging out:', error);
+    });
   }
 }
