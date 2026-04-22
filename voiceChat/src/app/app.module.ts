@@ -40,6 +40,7 @@ import { PopoverModule } from 'primeng/popover';
 import { Avatar } from 'primeng/avatar';
 import { DrawerModule } from 'primeng/drawer';
 import { FriendListComponent } from './components/friend-list/friend-list.component';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { FriendListComponent } from './components/friend-list/friend-list.compon
     InputTextModule,
     PopoverModule,
     Avatar,
-    DrawerModule
+    DrawerModule,
+    ColorPickerModule
 ],
   providers: [
     provideHttpClient(),

@@ -1,14 +1,32 @@
 <div class="container">
-    <h2>Create a new group</h2>
-    <div class="row">
-        <mat-form-field appearance="fill">
-            <mat-label>Group Name</mat-label>
-            <input matInput [(ngModel)]="groupName" name="groupName" required>
-        </mat-form-field>
-        <mat-form-field appearance="fill">
-            <mat-label>Group Color</mat-label>
-            <input matInput type="color" [(ngModel)]="groupColor" name="groupColor" required>
-        </mat-form-field>
-        <button mat-raised-button color="primary" (click)="createGroup()">Create Group</button>
+    <div class="titlebar">
+        <h2>Create a new group</h2>
+        <p>Set up a space for your community to connect.</p>
+    </div>
+    <div class="create-group-form">
+        <div class="group-example">
+            <p-avatar size="xlarge" [style]="{ 'background-color': groupColor }" shape="circle" label="{{groupName[0]}}"/>
+            <p *ngIf="groupName">{{ groupName }}</p>
+            <p *ngIf="!groupName">No name set</p>
+        </div>
+        <div class="flex flex-col gap-2 group-name">
+            <label for="groupName">Group name</label>
+            <input pInputText id="groupName" aria-describedby="groupName-help" [(ngModel)]="groupName" placeholder="Enter community name"/>
+        </div>
+        <div class="color-list">
+            <p-colorpicker [(ngModel)]="groupColor" />
+            <p-avatar (click)="setDefaultColor('#a1a1a9')" size="normal" [style]="{ 'background-color': '#a1a1a9', cursor: 'pointer'}"/>
+            <p-avatar (click)="setDefaultColor('#d94f61')" size="normal" [style]="{ 'background-color': '#d94f61', cursor: 'pointer'}"/>
+            <p-avatar (click)="setDefaultColor('#e17b36')" size="normal" [style]="{ 'background-color': '#e17b36', cursor: 'pointer'}"/>
+            <p-avatar (click)="setDefaultColor('#62b686')" size="normal" [style]="{ 'background-color': '#62b686', cursor: 'pointer'}"/>
+            <p-avatar (click)="setDefaultColor('#57a3e3')" size="normal" [style]="{ 'background-color': '#57a3e3', cursor: 'pointer'}"/>
+            <p-avatar (click)="setDefaultColor('#6466e8')" size="normal" [style]="{ 'background-color': '#6466e8', cursor: 'pointer'}"/>
+            <p-avatar (click)="setDefaultColor('#9959ee')" size="normal" [style]="{ 'background-color': '#9959ee', cursor: 'pointer'}"/>
+        </div>
+
+        <div class="buttons">
+            <p-button label="Cancel" mat-dialog-close/>
+            <p-button label="Save" (click)="createGroup()"/>
+        </div>
     </div>
 </div>

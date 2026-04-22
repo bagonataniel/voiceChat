@@ -14,6 +14,10 @@ export class CreateGroupComponent {
   constructor(private supabaseClient: SupabaseService){}
 
   async createGroup() {
+    if (!this.groupName) {
+      alert('Please enter a group name.');
+      return;
+    }
     const uId = await this.supabaseClient.getSession().then((response) => {
       if (response.data.session) {
         return response.data.session.user.id || '';
@@ -33,5 +37,9 @@ export class CreateGroupComponent {
         });
       }
     })
+  }
+
+  setDefaultColor(color: string) {
+    this.groupColor = color;
   }
 }

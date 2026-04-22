@@ -31,10 +31,29 @@ export class GroupsComponent implements OnInit{
   }
 
   async leaveGroup(group: any) {
-    await supabase.from('user_groups').delete().eq('group_id', group.id).eq('user_id', this.userId);
-    this.fetchGroups();
-    this.router.navigate(['/']);
-  };
+  const { error: deleteUserError } = await supabase.from('user_groups').delete().eq('group_id', group.id).eq('user_id', this.userId);
+
+  if (deleteUserError) {
+    console.error(deleteUserError);
+    return;
+  }
+
+  const { count, error: countError } = await supabase.from('user_groups').select('*', { count: 'exact', head: true }).eq('group_id', group.id);
+
+  if (countError) {
+    console.error(countError);
+    return;
+  }
+
+  if (count === 0) {
+    const res1 =await supabase.from('messages').delete().eq('group_id', group.id);
+    await supabase.from('groups').delete().eq('id', group.id);
+  }
+
+  // Refresh UI
+  await this.fetchGroups();
+  this.router.navigate(['/']);
+}
 
   async fetchGroups() {
     let { data: groups, error } = await supabase.from('groups').select('id, name, color, user_groups!inner(user_id)').eq('user_groups.user_id', this.userId);    
@@ -45,7 +64,7 @@ export class GroupsComponent implements OnInit{
   createGroup() {
     const dialogRef = this.dialog.open(CreateGroupComponent, {
       width: '500px', // optional
-      height: '400px',
+      height: '600px',
     });
 
     dialogRef.afterClosed().subscribe(result => {
