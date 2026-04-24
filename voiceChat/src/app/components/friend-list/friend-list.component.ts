@@ -12,6 +12,7 @@ import { BrowserModule } from "@angular/platform-browser";
 export class FriendListComponent implements OnInit {
   userId: string = '';
   friends: any[] = [];
+  pendingFriendRequests: any[] = [];
 
   constructor(private supabase: SupabaseService) { }
 
@@ -25,19 +26,37 @@ export class FriendListComponent implements OnInit {
   }
 
   async loadFriends() {
-    const { data, error } = await supabase.from('friends').select(`*, user:profiles!friends_user_id_fkey(*), friend:profiles!friends_friend_id_fkey(name, avatar_url, status_message)`)
+    const { data, error } = await supabase.from('friends').select(`*, user:profiles!friends_user_id_fkey(*), friend:profiles!friends_friend_id_fkey(name, avatar_url, status_message, status)`)
       .or(`user_id.eq.${this.userId},friend_id.eq.${this.userId}`);
+    console.log(data);
     if (error) {
       console.error('Error fetching friends:', error);
-    } else {
+    }
+    else {
       data.map((friend) => {
-        if (friend.user_id === this.userId) {
-          this.friends.push({ ...friend.friend, created_at: friend.created_at, status: friend.status, id: friend.id, sentByCurrentUser: true });
+        if (friend.status === 'pending') {
+          if (friend.user_id === this.userId) {
+            // Sent friend request
+            this.pendingFriendRequests.push({ ...friend.friend, created_at: friend.created_at, id: friend.id, sentByCurrentUser: true });
+          }
+          else if (friend.friend_id === this.userId) {
+            // Received friend request
+            this.pendingFriendRequests.push({ ...friend.user, created_at: friend.created_at, id: friend.id, sentByCurrentUser: false });
+          }
         }
-        else if (friend.friend_id === this.userId) {
-          this.friends.push({ ...friend.user, created_at: friend.created_at, status: friend.status, id: friend.id, sentByCurrentUser: false });
+        else {
+          if (friend.user_id === this.userId) {
+            // Sent friend request
+            this.friends.push({ ...friend.friend, created_at: friend.created_at, id: friend.id, sentByCurrentUser: true });
+          }
+          else if (friend.friend_id === this.userId) {
+            // Received friend request
+            this.friends.push({ ...friend.user, created_at: friend.created_at, id: friend.id, sentByCurrentUser: false });
+          }
         }
       })
+      console.log(this.friends);
+
     }
   }
 
@@ -55,6 +74,23 @@ export class FriendListComponent implements OnInit {
 
     } catch (err) {
       console.error('Unexpected error:', err);
+    }
+  }
+
+  async rejectFriendRequest(id: any) {
+    try {
+      const { data, error } = await supabase.from('friends').delete().eq('id', id);
+
+      this.friends = this.friends.filter(f => f.id !== id);
+
+      console.log("friend request rejected");
+      
+      if (error) {
+        console.error('Error rejecting friend request:', error);
+        return;
+      }
+    } catch (error) {
+      
     }
   }
 }

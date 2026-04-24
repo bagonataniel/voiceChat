@@ -8,3 +8,7 @@
     align-items: center;
     gap: 1rem;
 }
+
+::ng-deep .mat-badge-content {
+  background-color: #000000 !important;
+}

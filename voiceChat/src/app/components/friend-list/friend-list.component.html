@@ -1,10 +1,22 @@
 <div class="friend-list">
     <h4>Friends</h4>
     <div class="friend" *ngFor="let friend of friends">
-        <p-avatar image="{{friend.avatar_url}}" class="mr-2" size="large" shape="circle" />
+        <p-avatar image="{{friend.avatar_url}}" class="mr-2" size="large" shape="circle" matBadge="offline" *ngIf="friend.status == 'offline'"/>
+        <p-avatar image="{{friend.avatar_url}}" class="mr-2" size="large" shape="circle" matBadge="online" *ngIf="friend.status == 'online'"/>
         <p>{{friend.name}}</p>
-        <p *ngIf="friend.status == 'pending'">{{friend.status}}</p>
+        <p *ngIf="friend.Friendstatus == 'pending'">{{friend.Friendstatus}}</p>
         <p>{{friend.created_at | date:'yyyy/MM/dd HH:mm'}}</p>
-        <button mat-raised-button (click)="acceptFriendRequest(friend.id)" *ngIf="friend.status == 'pending' && !friend.sentByCurrentUser">Accept</button>
+        <button mat-raised-button (click)="acceptFriendRequest(friend.id)" *ngIf="friend.Friendstatus == 'pending' && !friend.sentByCurrentUser">Accept</button>
+    </div>
+
+    <h4>Pending Friend Requests</h4>
+    <div class="friend pendingFriend" *ngFor="let friend of pendingFriendRequests">
+        <p-avatar image="{{friend.avatar_url}}" class="mr-2" size="large" shape="circle" matBadge="offline" *ngIf="friend.status == 'offline'"/>
+        <p-avatar image="{{friend.avatar_url}}" class="mr-2" size="large" shape="circle" matBadge="online" *ngIf="friend.status == 'online'"/>
+        <p>{{friend.name}}</p>
+        <p *ngIf="friend.Friendstatus == 'pending'">{{friend.Friendstatus}}</p>
+        <p>{{friend.created_at | date:'yyyy/MM/dd HH:mm'}}</p>
+        <button mat-raised-button (click)="acceptFriendRequest(friend.id)" *ngIf="!friend.sentByCurrentUser">Accept</button>
+        <button mat-raised-button (click)="rejectFriendRequest(friend.id)" *ngIf="!friend.sentByCurrentUser">Reject</button>
     </div>
 </div>

@@ -51,6 +51,7 @@ export class SupabaseService {
 
   async signIn(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    await supabase.from('profiles').update({ status: 'online'}).eq('id', data.user?.id);
     return { data, error };
   }
 

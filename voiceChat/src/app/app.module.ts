@@ -41,6 +41,7 @@ import { Avatar } from 'primeng/avatar';
 import { DrawerModule } from 'primeng/drawer';
 import { FriendListComponent } from './components/friend-list/friend-list.component';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import {MatBadgeModule} from '@angular/material/badge';
 
 @NgModule({
   declarations: [
@@ -82,7 +83,8 @@ import { ColorPickerModule } from 'primeng/colorpicker';
     PopoverModule,
     Avatar,
     DrawerModule,
-    ColorPickerModule
+    ColorPickerModule,
+    MatBadgeModule
 ],
   providers: [
     provideHttpClient(),
