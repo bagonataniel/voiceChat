@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { SupabaseService } from '../../services/supabase.service';
 import { supabase } from '../../core/supabase.client';
 import { MatButton } from "@angular/material/button";
 import { BrowserModule } from "@angular/platform-browser";
+import { MenuItemCommandEvent } from 'primeng/api';
 
 @Component({
   selector: 'app-friend-list',
@@ -13,8 +14,25 @@ export class FriendListComponent implements OnInit {
   userId: string = '';
   friends: any[] = [];
   pendingFriendRequests: any[] = [];
+  items: any[] = [];
+  @ViewChild('menu') menu!: any;
 
-  constructor(private supabase: SupabaseService) { }
+  constructor(private supabase: SupabaseService) { 
+        this.items = [];
+  }
+
+    openMenu(event: MouseEvent, friend: any) {
+    this.items.push(
+      { 
+        label: 'Remove Friend', 
+        icon: 'pi pi-fw pi-times',
+        data: friend, // Attach the specific friend object to the menu item
+        command: (event: MenuItemCommandEvent) => this.removeFriend(event)
+      }
+    );
+    // Open the menu at the event location
+    this.menu.toggle(event);
+  }
 
   ngOnInit(): void {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -25,10 +43,25 @@ export class FriendListComponent implements OnInit {
     });
   }
 
+  async removeFriend(friend: any) {
+    const id = friend.item.data.id;
+    
+    try {
+      const { data, error } = await supabase.from('friends').delete().eq('id', id);
+      if (error) {
+        console.error('Error removing friend:', error);
+        return;
+      }
+    }
+    catch (error) {
+      console.error('Unexpected error:', error);
+    }
+    this.friends = this.friends.filter(f => f.id !== id);
+  }
+
   async loadFriends() {
     const { data, error } = await supabase.from('friends').select(`*, user:profiles!friends_user_id_fkey(*), friend:profiles!friends_friend_id_fkey(name, avatar_url, status_message, status)`)
       .or(`user_id.eq.${this.userId},friend_id.eq.${this.userId}`);
-    console.log(data);
     if (error) {
       console.error('Error fetching friends:', error);
     }
@@ -55,7 +88,6 @@ export class FriendListComponent implements OnInit {
           }
         }
       })
-      console.log(this.friends);
 
     }
   }
@@ -70,7 +102,8 @@ export class FriendListComponent implements OnInit {
       }
 
       console.log('Friend request accepted successfully:', data);
-      this.friends = this.friends.map(f => f.id === id ? { ...f, status: 'accepted' } : f);
+      this.friends.push(this.pendingFriendRequests.find(f => f.id === id));
+      this.pendingFriendRequests = this.pendingFriendRequests.filter(f => f.id !== id);
 
     } catch (err) {
       console.error('Unexpected error:', err);
@@ -81,7 +114,7 @@ export class FriendListComponent implements OnInit {
     try {
       const { data, error } = await supabase.from('friends').delete().eq('id', id);
 
-      this.friends = this.friends.filter(f => f.id !== id);
+      this.pendingFriendRequests = this.pendingFriendRequests.filter(f => f.id !== id);
 
       console.log("friend request rejected");
       

@@ -5,8 +5,10 @@
         <p-avatar image="{{friend.avatar_url}}" class="mr-2" size="large" shape="circle" matBadge="online" *ngIf="friend.status == 'online'"/>
         <p>{{friend.name}}</p>
         <p *ngIf="friend.Friendstatus == 'pending'">{{friend.Friendstatus}}</p>
-        <p>{{friend.created_at | date:'yyyy/MM/dd HH:mm'}}</p>
-        <button mat-raised-button (click)="acceptFriendRequest(friend.id)" *ngIf="friend.Friendstatus == 'pending' && !friend.sentByCurrentUser">Accept</button>
+        <!-- <p>{{friend.created_at | date:'yyyy/MM/dd HH:mm'}}</p> -->
+        <p-menu #menu [model]="items" [popup]="true"></p-menu>
+        <button pButton type="button" icon="pi pi-bars" (click)="openMenu($event, friend)" class="hamburger-btn"></button>
+
     </div>
 
     <h4>Pending Friend Requests</h4>

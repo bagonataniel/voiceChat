@@ -16,6 +16,8 @@ export class SettingsComponent implements OnInit {
   accountInformation: any;
   profilePicUrl: string = "";
   editingStatus: boolean = false;
+  currentPassword: string = "";
+  newPassword: string = "";
 
   constructor(private supabase: SupabaseService, private router: Router, private mainService: MainService) { }
 
@@ -92,6 +94,24 @@ export class SettingsComponent implements OnInit {
     else{
       this.editingStatus = !this.editingStatus;
     }
+  }
+
+  async updatePassword(oldPassword: string, newPassword: string) {
+    var pwrdMatch = true;
+    await supabase.auth.signInWithPassword({ email: this.accountInformation.user.email, password: oldPassword }).then(async response => {
+      if (response.error) {
+        console.error("Old password is incorrect:", response.error);
+        pwrdMatch = false;
+      }})
+    if (!pwrdMatch) {
+      return;
+    }
+    const { data, error } = await supabase.auth.updateUser({ password: newPassword })
+    if (error) {
+      console.error("Failed to update password:", error);
+      return;
+    }
+    console.log("Password updated successfully:", data);
   }
 
   logout() {

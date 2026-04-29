@@ -31,9 +31,12 @@
                         <tr *ngIf="accountInformation && accountInformation[0] as acc">
                             <td>Status message</td>
                             <td class="inputField">
-                                <input type="text" pInputText [(ngModel)]="accountInformation[0].status_message" [disabled]="!editingStatus" [pSize]="'small'"/>
-                                <button mat-icon-button *ngIf="!editingStatus" (click)="editStatus()"><mat-icon>edit</mat-icon></button>
-                                <button mat-icon-button *ngIf="editingStatus" (click)="editStatus()"><mat-icon>check_circle</mat-icon></button>
+                                <input type="text" pInputText [(ngModel)]="accountInformation[0].status_message"
+                                    [disabled]="!editingStatus" [pSize]="'small'" />
+                                <button mat-icon-button *ngIf="!editingStatus"
+                                    (click)="editStatus()"><mat-icon>edit</mat-icon></button>
+                                <button mat-icon-button *ngIf="editingStatus"
+                                    (click)="editStatus()"><mat-icon>check_circle</mat-icon></button>
                             </td>
                         </tr>
                         <tr>
@@ -44,12 +47,22 @@
                 </table>
             </div>
         </div>
-        <div class="upload-avatar settings-element">
-            <h5>Change profile picture</h5>
-            <p-fileupload #fu mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="demo[]"
-                url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*" maxFileSize="3000000"
-                (onUpload)="onUpload($event)" />
-            <p-button label="Upload" (onClick)="fu.upload()" severity="secondary" />
+        <div class="settings-element">
+            <h5>Change password</h5>
+            <div class="flex flex-col gap-2">
+                <input type="password" pInputText placeholder="Current password" [(ngModel)]="currentPassword"
+                    [pSize]="'small'" />
+                <input type="password" pInputText placeholder="New password" [(ngModel)]="newPassword"
+                    [pSize]="'small'" />
+                <button pButton label="Update password" (click)="updatePassword(currentPassword, newPassword)"
+                    severity="secondary"></button>
+            </div>
+            <div class="upload-avatar settings-element">
+                <h5>Change profile picture</h5>
+                <p-fileupload #fu mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="demo[]"
+                    url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*" maxFileSize="3000000"
+                    (onUpload)="onUpload($event)" />
+                <p-button label="Upload" (onClick)="fu.upload()" severity="secondary" />
+            </div>
         </div>
     </div>
-</div>
