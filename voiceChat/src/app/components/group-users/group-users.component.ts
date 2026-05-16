@@ -4,6 +4,7 @@ import { SupabaseService } from '../../services/supabase.service';
 import { supabase } from '../../core/supabase.client';
 import { Popover } from 'primeng/popover';
 import { MainService } from '../../services/main.service';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-group-users',
@@ -16,24 +17,28 @@ export class GroupUsersComponent implements OnInit, OnChanges {
   @ViewChild('op') op!: Popover;
   selectedUser: any = null;
   userId: string = '';
+  userRole: string = '';
   friendIds: string[] = [];
+  ContextMenuAdmin: MenuItem[] = [{ label: 'Kick User', icon: 'pi pi-sign-out', command: async () => { console.log("Kicked"); } }];
+  ContextMenuMember: MenuItem[] = [{ label: 'Report User', icon: 'pi pi-exclamation-triangle', command: async () => { console.log("Reported"); } }];
+  groupRoleOrder: string[] = ['Owner', 'Admin', 'Moderator', 'Member'];
 
   constructor(private supabase: SupabaseService, private router: Router, private mainService: MainService) { }
 
   async ngOnInit() {
-    this.selectGroupUsers();
     this.userId = await this.supabase.getUserId();
+    this.selectGroupUsers();
     const { data, error } = await supabase.from('friends').select("*").or(`user_id.eq.${this.userId},friend_id.eq.${this.userId}`).eq("status", "accepted");
     if (error) {
       console.error('Error fetching friends:', error);
-    } else {     
+    } else {
       data.map((friend) => {
         if (friend.user_id === this.userId) {
           this.friendIds.push(friend.friend_id);
         }
         else if (friend.friend_id === this.userId) {
           this.friendIds.push(friend.user_id);
-        }        
+        }
       })
     }
   }
@@ -47,8 +52,14 @@ export class GroupUsersComponent implements OnInit, OnChanges {
   async selectGroupUsers() {
     this.mainService.setSelectedGroupUsers(this.selectedGroup);
     this.mainService.selectedGroupUsers$.subscribe((data) => {
-      this.GroupParticipants = data;
+      this.GroupParticipants = this.groupRoleOrder.map(role => ({
+        role,
+        members: data.filter(member => member.role === role)
+      }));
+      this.userRole = this.GroupParticipants.find(group => group.members.some((member: any) => member.id === this.userId))?.role || '';
+      console.log("Your role: ", this.userRole);
     });
+
   }
 
   logout() {
@@ -64,13 +75,13 @@ export class GroupUsersComponent implements OnInit, OnChanges {
     this.op.hide();
   }
 
-  selectUser(event: any, user: any) {    
+  selectUser(event: any, user: any) {
     if (this.selectedUser?.id === user.id) {
       this.op.hide();
       this.selectedUser = null;
     } else {
-      this.selectedUser = user;      
-      this.op.show(event);     
+      this.selectedUser = user;
+      this.op.show(event);
       if (this.op.container) {
         this.op.align();
       }
@@ -78,12 +89,16 @@ export class GroupUsersComponent implements OnInit, OnChanges {
   }
 
   async addFriend(user: any) {
-    await supabase.from('friends').insert({ user_id: this.userId, friend_id: user.id}).then(({ data, error }) => {
+    await supabase.from('friends').insert({ user_id: this.userId, friend_id: user.id }).then(({ data, error }) => {
       if (error) {
         console.error('Error adding friend:', error);
       } else {
         console.log('Friend added successfully:', data);
       }
     });
+  }
+
+  get activeContextMenu() {
+    return this.userRole === 'Owner' ? this.ContextMenuAdmin : this.ContextMenuMember;
   }
 }

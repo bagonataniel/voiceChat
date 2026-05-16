@@ -101,7 +101,7 @@ export class MainComponent implements OnInit {
 
   async getGroupMembersDetails() {
     this.mainService.selectedGroupUsers$.subscribe((users) => {
-      this.groupMembers = users;      
+      this.groupMembers = users;
     });
   }
 

@@ -31,10 +31,19 @@ export class MainService {
   }
 
   async setSelectedGroupUsers(groupId: number) {
-    await supabase.from('user_groups').select('user_id').eq('group_id', groupId).then(async response => {
+    // Fetch user IDs and roles for the selected group
+    await supabase.from('user_groups').select('user_id, role').eq('group_id', groupId).then(async response => {
       if (response.data) {
+        // Fetch user details for the retrieved user IDs
         const userIds = response.data.map(member => member.user_id);
         await supabase.from('profiles').select('*').in('id', userIds).then(userResponse => {
+          // Combine user details with their roles
+          userResponse.data?.forEach(user => 
+            { 
+              const memberInfo = response.data?.find((member) => member.user_id === user.id);
+              if (memberInfo) {
+                user.role = memberInfo.role;
+              }});
           if (userResponse.data) {
             this.selectedGroupUsers.next(userResponse.data as any)
           }

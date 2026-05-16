@@ -1,9 +1,15 @@
 <div class="users-area">
     <p>A csoport tagjai</p>
-    <mat-card class="user" *ngFor="let user of GroupParticipants" (click)="selectUser($event, user)">
-         <p-avatar image="{{user.avatar_url}}" class="mr-2" size="large" shape="circle" />
-        <p>{{user.name}}</p>
-    </mat-card>
+    <div class="role" *ngFor="let role of GroupParticipants">
+        <p *ngIf="role.members.length !== 0">{{role.role}}</p>
+        <ng-container *ngIf="role.members.length !== 0">
+            <mat-card class="user" *ngFor="let user of role.members" (click)="selectUser($event, user)" (contextmenu)="cm.show($event)">
+                <p-avatar image="{{user.avatar_url}}" class="mr-2" size="large" shape="circle" />
+                <p>{{user.name}}</p>
+                <p>{{user.role}}</p>
+            </mat-card>
+        </ng-container>
+    </div>
     <p-popover #op (onHide)="selectedUser = null">
         <ng-template pTemplate="content">
             <div *ngIf="selectedUser" class="selectionMenu">
@@ -12,8 +18,11 @@
                     <p>{{selectedUser.name}}</p>
                     <p>{{selectedUser.status_message}}</p>
                 </div>
-                <button mat-raised-button *ngIf="selectedUser.id !== userId && !friendIds.includes(selectedUser.id)" (click)="addFriend(selectedUser)">Add friend</button>
+                <button mat-raised-button *ngIf="selectedUser.id !== userId && !friendIds.includes(selectedUser.id)"
+                    (click)="addFriend(selectedUser)">Add friend</button>
             </div>
         </ng-template>
     </p-popover>
+    <p-contextmenu #cm [model]="activeContextMenu"/>
+
 </div>

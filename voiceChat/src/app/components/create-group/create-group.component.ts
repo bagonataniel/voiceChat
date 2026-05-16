@@ -28,7 +28,7 @@ export class CreateGroupComponent {
       if (error) {
         console.error('Error creating group:', error);
       } else {
-        supabase.from('user_groups').insert({ user_id: uId, group_id: data?.[0].id }).then(({ data, error }) => {
+        supabase.from('user_groups').insert({ user_id: uId, group_id: data?.[0].id, role: 'Owner' }).then(({ data, error }) => {
           if (error) {
             console.error('Error adding user to group:', error);
           } else {
