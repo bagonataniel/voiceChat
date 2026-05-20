@@ -15,22 +15,19 @@ export class FriendListComponent implements OnInit {
   friends: any[] = [];
   pendingFriendRequests: any[] = [];
   items: any[] = [];
+  selectedFriend: any = null;
   @ViewChild('menu') menu!: any;
 
-  constructor(private supabase: SupabaseService) { 
-        this.items = [];
+  constructor(private supabase: SupabaseService) {
+    this.items = [{
+        label: 'Remove Friend',
+        icon: 'pi pi-fw pi-times',
+        command: () => this.removeFriend()
+      }];
   }
 
-    openMenu(event: MouseEvent, friend: any) {
-    this.items.push(
-      { 
-        label: 'Remove Friend', 
-        icon: 'pi pi-fw pi-times',
-        data: friend, // Attach the specific friend object to the menu item
-        command: (event: MenuItemCommandEvent) => this.removeFriend(event)
-      }
-    );
-    // Open the menu at the event location
+  openMenu(event: MouseEvent, friend: any) {
+    this.selectedFriend = friend;
     this.menu.toggle(event);
   }
 
@@ -43,9 +40,9 @@ export class FriendListComponent implements OnInit {
     });
   }
 
-  async removeFriend(friend: any) {
-    const id = friend.item.data.id;
-    
+  async removeFriend() {
+    const id = this.selectedFriend.id;
+
     try {
       const { data, error } = await supabase.from('friends').delete().eq('id', id);
       if (error) {
@@ -117,13 +114,13 @@ export class FriendListComponent implements OnInit {
       this.pendingFriendRequests = this.pendingFriendRequests.filter(f => f.id !== id);
 
       console.log("friend request rejected");
-      
+
       if (error) {
         console.error('Error rejecting friend request:', error);
         return;
       }
     } catch (error) {
-      
+
     }
   }
 }

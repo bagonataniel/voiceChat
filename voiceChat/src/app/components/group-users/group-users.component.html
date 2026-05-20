@@ -3,10 +3,9 @@
     <div class="role" *ngFor="let role of GroupParticipants">
         <p *ngIf="role.members.length !== 0">{{role.role}}</p>
         <ng-container *ngIf="role.members.length !== 0">
-            <mat-card class="user" *ngFor="let user of role.members" (click)="selectUser($event, user)" (contextmenu)="cm.show($event)">
+            <mat-card class="user" *ngFor="let user of role.members" (click)="selectUser($event, user)" (contextmenu)="openContextMenu($event, user)">
                 <p-avatar image="{{user.avatar_url}}" class="mr-2" size="large" shape="circle" />
                 <p>{{user.name}}</p>
-                <p>{{user.role}}</p>
             </mat-card>
         </ng-container>
     </div>
@@ -26,3 +25,4 @@
     <p-contextmenu #cm [model]="activeContextMenu"/>
 
 </div>
+<p-toast></p-toast>

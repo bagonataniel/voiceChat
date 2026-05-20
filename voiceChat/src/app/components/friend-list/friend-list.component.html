@@ -11,7 +11,7 @@
 
     </div>
 
-    <h4>Pending Friend Requests</h4>
+    <h4 *ngIf="pendingFriendRequests.length > 0">Pending Friend Requests</h4>
     <div class="friend pendingFriend" *ngFor="let friend of pendingFriendRequests">
         <p-avatar image="{{friend.avatar_url}}" class="mr-2" size="large" shape="circle" matBadge="offline" *ngIf="friend.status == 'offline'"/>
         <p-avatar image="{{friend.avatar_url}}" class="mr-2" size="large" shape="circle" matBadge="online" *ngIf="friend.status == 'online'"/>
@@ -20,5 +20,6 @@
         <p>{{friend.created_at | date:'yyyy/MM/dd HH:mm'}}</p>
         <button mat-raised-button (click)="acceptFriendRequest(friend.id)" *ngIf="!friend.sentByCurrentUser">Accept</button>
         <button mat-raised-button (click)="rejectFriendRequest(friend.id)" *ngIf="!friend.sentByCurrentUser">Reject</button>
+        <button pButton type="button" icon="pi pi-times" (click)="rejectFriendRequest(friend.id)" *ngIf="friend.sentByCurrentUser"></button>
     </div>
 </div>

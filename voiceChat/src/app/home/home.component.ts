@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit{
   async ngOnInit() {
     await this.supabase.getSession().then((response) => {
       if (response.data.session) {
-        this.username = response.data.session.user.user_metadata.name || '_username_';
+        this.username = response.data.session.user.user_metadata.name || 'error: cannot get username';
       }
     });
   }

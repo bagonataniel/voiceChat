@@ -39,6 +39,12 @@ export class SupabaseService {
     return user ? user.id : '';
   }
 
+  getEnumValues(enumName: string) {
+    return supabase.rpc('get_enum_values', {
+      enum_name: enumName,
+    });
+  }
+
   async signUp(email: string, password: string, name: string) {
     const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
     if (data.user) {
@@ -51,7 +57,7 @@ export class SupabaseService {
 
   async signIn(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    await supabase.from('profiles').update({ status: 'online'}).eq('id', data.user?.id);
+    await supabase.from('profiles').update({ status: 'online' }).eq('id', data.user?.id);
     return { data, error };
   }
 

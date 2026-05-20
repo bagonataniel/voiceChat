@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CreateGroupComponent } from '../create-group/create-group.component';
 import { JoinGroupComponent } from '../join-group/join-group.component';
 import { MainService } from '../../services/main.service';
-import { ConfirmationService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,50 +13,58 @@ import { Router } from '@angular/router';
   templateUrl: './groups.component.html',
   styleUrl: './groups.component.css'
 })
-export class GroupsComponent implements OnInit{
+export class GroupsComponent implements OnInit {
   groups: any[] = [];
   userId: string = '';
   items: MenuItem[] | undefined;
   selectedGroup: any;
 
-  constructor(private supabaseService: SupabaseService, private dialog: MatDialog, private mainService: MainService, private router: Router) {}
+  constructor(private supabaseService: SupabaseService, private dialog: MatDialog, private mainService: MainService, private router: Router, private messageService: MessageService) { }
 
   async ngOnInit(): Promise<void> {
-    this.items = [{ label: 'Leave Group', icon: 'pi pi-sign-out', command: async () => { await this.leaveGroup(this.selectedGroup); }}];
+    this.items = [{ label: 'Leave Group', icon: 'pi pi-sign-out', command: async () => { await this.leaveGroup(this.selectedGroup); } }];
     this.userId = await this.supabaseService.getSession().then((response) => {
       if (response.data.session) {
         return response.data.session.user.id || '';
-      }});
+      }
+    });
     this.fetchGroups();
   }
 
   async leaveGroup(group: any) {
-  const { error: deleteUserError } = await supabase.from('user_groups').delete().eq('group_id', group.id).eq('user_id', this.userId);
+    const groupMembers = await supabase.from('user_groups').select('*').eq('group_id', group.id);
 
-  if (deleteUserError) {
-    console.error(deleteUserError);
-    return;
+    if (groupMembers.data?.length && groupMembers.data.length > 1 && groupMembers.data.filter((member) => member.role === 'Owner').length <= 1) {
+      console.log("There will be no owners of this group if you leave. Please assign another owner before leaving.");
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'There will be no owners of this group if you leave. Please assign another owner before leaving.' });
+      return;
+    }
+    const { error: deleteUserError } = await supabase.from('user_groups').delete().eq('group_id', group.id).eq('user_id', this.userId);
+
+    if (deleteUserError) {
+      console.error(deleteUserError);
+      return;
+    }
+
+    const { count, error: countError } = await supabase.from('user_groups').select('*', { count: 'exact', head: true }).eq('group_id', group.id);
+
+    if (countError) {
+      console.error(countError);
+      return;
+    }
+
+    if (count === 0) {
+      const res1 =await supabase.from('messages').delete().eq('group_id', group.id);
+      await supabase.from('groups').delete().eq('id', group.id);
+    }
+
+    // Refresh UI
+    await this.fetchGroups();
+    this.router.navigate(['/']);
   }
-
-  const { count, error: countError } = await supabase.from('user_groups').select('*', { count: 'exact', head: true }).eq('group_id', group.id);
-
-  if (countError) {
-    console.error(countError);
-    return;
-  }
-
-  if (count === 0) {
-    const res1 =await supabase.from('messages').delete().eq('group_id', group.id);
-    await supabase.from('groups').delete().eq('id', group.id);
-  }
-
-  // Refresh UI
-  await this.fetchGroups();
-  this.router.navigate(['/']);
-}
 
   async fetchGroups() {
-    let { data: groups, error } = await supabase.from('groups').select('id, name, color, user_groups!inner(user_id)').eq('user_groups.user_id', this.userId);    
+    let { data: groups, error } = await supabase.from('groups').select('id, name, color, user_groups!inner(user_id)').eq('user_groups.user_id', this.userId);
     this.groups = groups || [];
     this.mainService.setGroups(this.groups);
   }
@@ -72,7 +80,7 @@ export class GroupsComponent implements OnInit{
     });
   }
 
-  addGroup(){
+  addGroup() {
     const dialogRef = this.dialog.open(JoinGroupComponent, {
       width: '500px',
       height: '400px',
@@ -83,7 +91,7 @@ export class GroupsComponent implements OnInit{
     });
   }
 
-  openSettings(){
+  openSettings() {
     this.mainService.setSettingsVisibility(true);
   }
 }

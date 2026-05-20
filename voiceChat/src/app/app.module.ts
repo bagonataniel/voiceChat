@@ -9,8 +9,8 @@ import { FormsModule } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatCardModule } from '@angular/material/card';
-import {MatDividerModule} from '@angular/material/divider';
-import {MatListModule} from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -23,8 +23,8 @@ import { HomeComponent } from './home/home.component';
 import { CreateGroupComponent } from './components/create-group/create-group.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { JoinGroupComponent } from './components/join-group/join-group.component';
-import {MatStepperModule} from '@angular/material/stepper';
-import {MatMenuModule} from '@angular/material/menu';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatMenuModule } from '@angular/material/menu';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import { SplitterModule } from 'primeng/splitter';
@@ -41,7 +41,9 @@ import { Avatar } from 'primeng/avatar';
 import { DrawerModule } from 'primeng/drawer';
 import { FriendListComponent } from './components/friend-list/friend-list.component';
 import { ColorPickerModule } from 'primeng/colorpicker';
-import {MatBadgeModule} from '@angular/material/badge';
+import { MatBadgeModule } from '@angular/material/badge';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 @NgModule({
   declarations: [
@@ -84,16 +86,18 @@ import {MatBadgeModule} from '@angular/material/badge';
     Avatar,
     DrawerModule,
     ColorPickerModule,
-    MatBadgeModule
-],
+    MatBadgeModule,
+    ToastModule
+  ],
   providers: [
     provideHttpClient(),
     provideAnimationsAsync(),
-    providePrimeNG({ 
-            theme: {
-                preset: Aura
-            }
-        })
+    providePrimeNG({
+      theme: {
+        preset: Aura
+      }
+    }),
+    MessageService
   ],
   bootstrap: [AppComponent]
 })
